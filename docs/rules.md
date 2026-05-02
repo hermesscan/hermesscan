@@ -175,12 +175,24 @@ uses:\s+[^@\s]+@(?:main|master|latest)
 **Tags:** `package-manager`  
 **File types:** `bash`, `powershell`, `yaml`, `makefile`  
 
-Package managers may use shared caches that can behave poorly under concurrent jobs. This rule is advisory unless paired with shared cache paths or manual parallelism.
+Package managers may use shared caches that can behave poorly under concurrent jobs. This rule is advisory unless the install uses an explicit per-runner or per-run cache location.
 
-**Recommendation:** Use CI-managed caches with scoped keys and avoid shared writable cache directories across concurrent jobs.
+**Recommendation:** Use CI-managed caches with scoped keys or point package cache directories at runner-temp or run-scoped paths.
 
 ```text
 (?i)\b(npm\s+install|npm\s+ci|yarn\s+install|pip\s+install|dotnet\s+restore|mvn\s+dependency|mvn\s+install)\b
+```
+
+**Exclude pattern:**
+
+```text
+(?i)(--cache(?:=|\s+)|--cache-dir(?:=|\s+)|PIP_CACHE_DIR\s*=|YARN_CACHE_FOLDER\s*=|npm_config_cache\s*=|NPM_CONFIG_CACHE\s*=)[^\r\n]*(RUNNER_TEMP|RUNNER_WORKSPACE|GITHUB_RUN_ID|CI_PIPELINE_ID|BUILD_BUILDID|runner\.temp|runner\.workspace|\$TMPDIR|\$TMP|\$TEMP|%TEMP%)
+```
+
+**Context before pattern:** within the previous 3 line(s)
+
+```text
+(?i)(?:\$env:)?\b(PIP_CACHE_DIR|YARN_CACHE_FOLDER|npm_config_cache|NPM_CONFIG_CACHE)\b\s*[:=][^\r\n]*(RUNNER_TEMP|RUNNER_WORKSPACE|GITHUB_RUN_ID|CI_PIPELINE_ID|BUILD_BUILDID|runner\.temp|runner\.workspace|\$TMPDIR|\$TMP|\$TEMP|%TEMP%)
 ```
 
 ## HMS0011 - Docker build cache contention risk

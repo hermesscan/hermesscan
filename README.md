@@ -24,6 +24,7 @@ Version 0.8.0 focuses on rule precision and packaging polish:
 - default-rule precision tests for common false-positive cases
 - Docker Compose project-name context handling
 - GitHub Actions cache-key specificity handling
+- package-install cache isolation context handling
 - safer rule authoring and release validation workflows
 
 ## Quick start from source
