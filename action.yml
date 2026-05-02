@@ -48,7 +48,7 @@ inputs:
     required: false
     default: ''
   rule:
-    description: Optional rule ID filter. Provide one rule ID; use CLI directly for multiple rule IDs.
+    description: Optional rule ID filter. Provide one rule ID or a comma-delimited list such as HMS0001,HMS0010.
     required: false
     default: ''
   changed-only:
@@ -116,6 +116,8 @@ runs:
 
     - name: Run HermesScan
       shell: bash
+      env:
+        HERMESSCAN_RULE_INPUT: ${{ inputs.rule }}
       run: |
         set -euo pipefail
 
@@ -148,8 +150,16 @@ runs:
         if [ -n '${{ inputs.tag }}' ]; then
           args+=(--tag '${{ inputs.tag }}')
         fi
-        if [ -n '${{ inputs.rule }}' ]; then
-          args+=(--rule '${{ inputs.rule }}')
+        rule_input="${HERMESSCAN_RULE_INPUT}"
+        if [ -n "${rule_input}" ]; then
+          IFS=',' read -r -a rule_values <<< "${rule_input}"
+          for rule_value in "${rule_values[@]}"; do
+            rule_value="${rule_value#"${rule_value%%[![:space:]]*}"}"
+            rule_value="${rule_value%"${rule_value##*[![:space:]]}"}"
+            if [ -n "${rule_value}" ]; then
+              args+=(--rule "${rule_value}")
+            fi
+          done
         fi
         if [ '${{ inputs.changed-only }}' = 'true' ]; then
           args+=(--changed-only)

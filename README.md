@@ -189,6 +189,18 @@ Basic usage after the `v0.7.0` tag is published. The action tag and downloaded C
     fail-on: high
 ```
 
+Run selected rules through the action:
+
+```yaml
+- name: Run selected HermesScan rules
+  uses: hermesscan/hermesscan@v0.7.0
+  with:
+    path: .
+    rule: HMS0002,HMS0013
+    format: summary
+    no-fail: 'true'
+```
+
 SARIF upload:
 
 ```yaml

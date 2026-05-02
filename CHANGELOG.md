@@ -5,6 +5,7 @@
 ### Added
 
 - Added `hermesscan rules validate` to check publish-ready rule catalog metadata and regex syntax.
+- Added comma-delimited multi-rule support to the GitHub Action `rule` input.
 - Added tests that keep the repository rule catalog in sync with the embedded default catalog.
 - Added default-rule precision tests for common false-positive cases.
 

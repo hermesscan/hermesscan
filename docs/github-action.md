@@ -17,7 +17,7 @@ HermesScan includes a composite GitHub Action wrapper in `action.yml`.
 | `min-severity` | empty | Only report findings at or above this severity. |
 | `category` | empty | Restrict scanning to one rule category. |
 | `tag` | empty | Restrict scanning to rules with one tag. |
-| `rule` | empty | Restrict scanning to one rule ID. Use the CLI directly for multiple `--rule` values. |
+| `rule` | empty | Restrict scanning to one rule ID or a comma-delimited list such as `HMS0001,HMS0010`. |
 | `changed-only` | `false` | Scan only files changed according to Git. |
 | `changed-base` | empty | Base ref or commit for changed-file scans. |
 | `github-annotations` | `false` | Emit GitHub Actions annotations. |
@@ -84,6 +84,32 @@ You can also request annotation output by setting `format: github`; `github-anno
 ```
 
 Use `actions/checkout` with `fetch-depth: 0` when using changed-file scans so the base ref is available locally.
+
+## Rule-focused scans
+
+Scan with one rule:
+
+```yaml
+- name: Run one HermesScan rule
+  uses: hermesscan/hermesscan@v0.7.0
+  with:
+    path: .
+    rule: HMS0002
+    format: summary
+    no-fail: 'true'
+```
+
+Scan with multiple selected rules:
+
+```yaml
+- name: Run selected HermesScan rules
+  uses: hermesscan/hermesscan@v0.7.0
+  with:
+    path: .
+    rule: HMS0002,HMS0013
+    format: summary
+    no-fail: 'true'
+```
 
 ## SARIF for GitHub Code Scanning
 
