@@ -1,4 +1,4 @@
-# HermesScan v0.7.0 release notes draft
+# HermesScan v0.7.0 release notes
 
 HermesScan `v0.7.0` focuses on rule quality and adoption polish.
 
@@ -24,7 +24,7 @@ The action downloads the `0.7.0` CLI by default unless the `version` input is ov
 
 ## Validation
 
-Before tagging, run:
+Validation used before tagging:
 
 ```powershell
 go test .\...

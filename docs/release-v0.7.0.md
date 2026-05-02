@@ -14,14 +14,14 @@ HermesScan v0.7.0 is a rule-quality and adoption-polish release built on the pub
 
 ## Validation checklist
 
-Before tagging `v0.7.0`, run:
+Validation used before tagging `v0.7.0`:
 
 ```powershell
 go test .\...
 go vet .\...
 go build -ldflags "-X main.version=0.7.0" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe version
-.\hermesscan.exe rules docs --output .\docsules.md
+.\hermesscan.exe rules docs --output .\docs\rules.md
 .\hermesscan.exe scan . --summary --exclude "examples/**" --no-fail
 ```
 

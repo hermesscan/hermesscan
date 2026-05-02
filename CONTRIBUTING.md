@@ -15,7 +15,8 @@ Run these before opening a pull request:
 ```bash
 go test ./...
 go vet ./...
-go build -ldflags "-X main.version=0.7.0" -o hermesscan ./cmd/hermesscan
+go build -ldflags "-X main.version=0.8.0" -o hermesscan ./cmd/hermesscan
+./hermesscan rules validate
 ./hermesscan scan ./examples --summary --no-fail
 ```
 
@@ -24,7 +25,8 @@ Windows PowerShell:
 ```powershell
 go test .\...
 go vet .\...
-go build -ldflags "-X main.version=0.7.0" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.8.0" -o .\hermesscan.exe .\cmd\hermesscan
+.\hermesscan.exe rules validate
 .\hermesscan.exe scan .\examples --summary --no-fail
 ```
 
@@ -49,6 +51,7 @@ Each rule should include:
 - recommendation
 
 Add or update tests when changing rules or scanner behavior.
+Run `hermesscan rules validate` before committing rule catalog changes.
 
 ## Rule severity guidance
 

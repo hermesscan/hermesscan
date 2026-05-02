@@ -11,18 +11,18 @@ HermesScan is **not** a CI platform. It is a scanner and quality gate for the sc
 
 ## Status
 
-Current development version: `0.7.0`
+Current development version: `0.8.0`
+
+Latest release: `0.7.0`
 
 > HermesScan is currently in public preview. Rules are intentionally conservative and may evolve as the scanner matures.
 
-Version 0.7.0 focuses on rule quality and adoption polish:
+Version 0.8.0 focuses on rule precision and packaging polish:
 
-- generated rule reference documentation
-- single-rule scanning with `--rule`
-- rule inventory commands for categories and tags
-- configuration filters for enabled rules, categories, and tags
-- refined fixed-port and package-cache rule behavior
-- new GitHub Actions rules for self-hosted runners and broad cache keys
+- rule catalog validation with `rules validate`
+- sync checks between embedded and repository rule catalogs
+- default-rule precision tests for common false-positive cases
+- safer rule authoring and release validation workflows
 
 ## Quick start from source
 
@@ -30,7 +30,7 @@ Version 0.7.0 focuses on rule quality and adoption polish:
 
 ```powershell
 go test .\...
-go build -ldflags "-X main.version=0.7.0" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.8.0" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe version
 .\hermesscan.exe scan .\examples --summary --no-fail
 ```
@@ -39,7 +39,7 @@ go build -ldflags "-X main.version=0.7.0" -o .\hermesscan.exe .\cmd\hermesscan
 
 ```bash
 go test ./...
-go build -ldflags "-X main.version=0.7.0" -o ./hermesscan ./cmd/hermesscan
+go build -ldflags "-X main.version=0.8.0" -o ./hermesscan ./cmd/hermesscan
 ./hermesscan version
 ./hermesscan scan ./examples --summary --no-fail
 ```
@@ -55,7 +55,6 @@ Additional guides:
 - [Rule reference](docs/rules.md)
 - [Changed-file scans](docs/changed-only.md)
 - [v0.7.0 release notes](docs/release-v0.7.0.md)
-- [v0.7.0 release checklist](docs/release-v0.7.0-checklist.md)
 
 Short Windows development note: PowerShell does not execute programs from the current directory by bare name. Use:
 
@@ -77,6 +76,7 @@ hermesscan init
 hermesscan rules list
 hermesscan rules show RULE_ID
 hermesscan rules docs [--output docs/rules.md]
+hermesscan rules validate
 hermesscan rules categories
 hermesscan rules tags
 hermesscan version
@@ -310,6 +310,7 @@ Suppress a rule for the whole file:
 .\hermesscan.exe rules show HMS0001
 .\hermesscan.exe rules categories
 .\hermesscan.exe rules tags
+.\hermesscan.exe rules validate
 .\hermesscan.exe rules docs --output .\docs\rules.md
 ```
 
@@ -331,8 +332,9 @@ Before tagging a release:
 ```powershell
 go test .\...
 go vet .\...
-go build -ldflags "-X main.version=0.7.0" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.8.0" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe version
+.\hermesscan.exe rules validate
 .\hermesscan.exe rules docs --output .\docs\rules.md
 .\hermesscan.exe scan . --summary --exclude "examples/**" --no-fail
 ```
@@ -342,7 +344,7 @@ go build -ldflags "-X main.version=0.7.0" -o .\hermesscan.exe .\cmd\hermesscan
 PowerShell 5.1-compatible build script:
 
 ```powershell
-.\scripts\Build-HermesScan.ps1 -AllTargets -Version 0.7.0
+.\scripts\Build-HermesScan.ps1 -AllTargets -Version 0.8.0
 ```
 
 Outputs are written to `dist/` with `.sha256` checksum files.

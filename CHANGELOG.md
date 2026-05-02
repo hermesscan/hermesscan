@@ -1,6 +1,14 @@
 # Changelog
 
-## 0.7.0 - Unreleased
+## 0.8.0 - Unreleased
+
+### Added
+
+- Added `hermesscan rules validate` to check publish-ready rule catalog metadata and regex syntax.
+- Added tests that keep the repository rule catalog in sync with the embedded default catalog.
+- Added default-rule precision tests for common false-positive cases.
+
+## 0.7.0 - 2026-05-02
 
 ### Added
 

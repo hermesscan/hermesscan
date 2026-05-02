@@ -16,7 +16,7 @@ import (
 	"github.com/hermesscan/hermesscan/internal/scanner"
 )
 
-var version = "0.7.0"
+var version = "0.8.0"
 
 type repeatFlag []string
 
@@ -429,7 +429,7 @@ func runInit(args []string) int {
 
 func runRules(args []string) int {
 	if len(args) == 0 {
-		fmt.Fprintf(os.Stderr, "usage: hermesscan rules list|show|docs|categories|tags [id] [--rules rules/hermes.rules.json]\n")
+		fmt.Fprintf(os.Stderr, "usage: hermesscan rules list|show|docs|validate|categories|tags [id] [--rules rules/hermes.rules.json]\n")
 		return 2
 	}
 
@@ -440,6 +440,8 @@ func runRules(args []string) int {
 		return runRulesShow(args[1:])
 	case "docs":
 		return runRulesDocs(args[1:])
+	case "validate":
+		return runRulesValidate(args[1:])
 	case "categories":
 		return runRulesCategories(args[1:])
 	case "tags":
@@ -550,6 +552,35 @@ func runRulesDocs(args []string) int {
 	return 0
 }
 
+func runRulesValidate(args []string) int {
+	set := flag.NewFlagSet("rules validate", flag.ContinueOnError)
+	set.SetOutput(io.Discard)
+	rulePath := set.String("rules", defaultRulesPath(), "path to JSON rule file")
+	if err := set.Parse(args); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return 2
+	}
+	if len(set.Args()) > 0 {
+		fmt.Fprintf(os.Stderr, "error: unexpected argument %q\n", set.Args()[0])
+		return 2
+	}
+	loadedRules, err := rules.Load(*rulePath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return 2
+	}
+	if err := rules.ValidateCatalog(loadedRules); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return 2
+	}
+	source := *rulePath
+	if source == "" {
+		source = "embedded default rules"
+	}
+	fmt.Fprintf(os.Stdout, "Validated %d rules from %s\n", len(loadedRules), source)
+	return 0
+}
+
 func runRulesCategories(args []string) int {
 	return runRulesValueList(args, "categories")
 }
@@ -637,5 +668,9 @@ func printUsage(writer io.Writer) {
 	fmt.Fprintf(writer, "  hermesscan init [--path .hermesscan.json] [--force]\n")
 	fmt.Fprintf(writer, "  hermesscan rules list [--rules rules/hermes.rules.json]\n")
 	fmt.Fprintf(writer, "  hermesscan rules show RULE_ID [--rules rules/hermes.rules.json]\n")
+	fmt.Fprintf(writer, "  hermesscan rules docs [--rules rules/hermes.rules.json] [--output docs/rules.md]\n")
+	fmt.Fprintf(writer, "  hermesscan rules validate [--rules rules/hermes.rules.json]\n")
+	fmt.Fprintf(writer, "  hermesscan rules categories [--rules rules/hermes.rules.json]\n")
+	fmt.Fprintf(writer, "  hermesscan rules tags [--rules rules/hermes.rules.json]\n")
 	fmt.Fprintf(writer, "  hermesscan version\n")
 }

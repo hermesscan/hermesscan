@@ -1,6 +1,6 @@
 # HermesScan Rule Reference
 
-Generated for HermesScan 0.7.0.
+Generated for HermesScan 0.8.0.
 
 | ID | Severity | Category | Name |
 |---|---|---|---|

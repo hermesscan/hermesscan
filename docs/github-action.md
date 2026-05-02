@@ -2,9 +2,6 @@
 
 HermesScan includes a composite GitHub Action wrapper in `action.yml`.
 
-> Before the `v0.7.0` tag exists, use a local workflow step that builds HermesScan from source, or temporarily test with `uses: hermesscan/hermesscan@main`. For required gates, pin to a release tag or commit SHA.
-
-
 ## Action inputs
 
 | Input | Default | Description |

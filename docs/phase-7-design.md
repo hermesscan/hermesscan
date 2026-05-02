@@ -30,6 +30,5 @@ HermesScan 0.7.0 focuses on rule-quality and adoption polish after the public `v
 ## Future work
 
 - Add structured parser-backed rules where regex rules become too noisy.
-- Add `rules validate` for external rule packs.
 - Add explicit rule confidence metadata.
 - Add rule documentation generated during release.

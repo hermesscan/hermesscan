@@ -74,3 +74,49 @@ func TestParseScanOptionsRuleFilter(t *testing.T) {
 		t.Fatalf("unexpected rule values: %#v", options.rule)
 	}
 }
+
+func TestRunRulesValidateAcceptsValidCatalog(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "rules.json")
+	data := `[{
+  "id": "HMS0999",
+  "name": "Valid test rule",
+  "severity": "Low",
+  "category": "test",
+  "tags": ["test"],
+  "fileTypes": ["bash"],
+  "pattern": "sleep",
+  "description": "description",
+  "recommendation": "recommendation"
+}]`
+	if err := os.WriteFile(path, []byte(data), 0644); err != nil {
+		t.Fatalf("write rules: %v", err)
+	}
+
+	if code := runRulesValidate([]string{"--rules", path}); code != 0 {
+		t.Fatalf("runRulesValidate exit code = %d; want 0", code)
+	}
+}
+
+func TestRunRulesValidateRejectsInvalidCatalog(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "rules.json")
+	data := `[{
+  "id": "HMS0999",
+  "name": "Invalid test rule",
+  "severity": "Low",
+  "category": "test",
+  "tags": ["test"],
+  "fileTypes": ["bash"],
+  "pattern": "(",
+  "description": "description",
+  "recommendation": "recommendation"
+}]`
+	if err := os.WriteFile(path, []byte(data), 0644); err != nil {
+		t.Fatalf("write rules: %v", err)
+	}
+
+	if code := runRulesValidate([]string{"--rules", path}); code != 2 {
+		t.Fatalf("runRulesValidate exit code = %d; want 2", code)
+	}
+}

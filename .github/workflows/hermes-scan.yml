@@ -31,7 +31,10 @@ jobs:
           go-version: '1.22.x'
 
       - name: Build HermesScan
-        run: go build -ldflags "-X main.version=0.7.0" -o hermesscan ./cmd/hermesscan
+        run: go build -ldflags "-X main.version=0.8.0" -o hermesscan ./cmd/hermesscan
+
+      - name: Validate HermesScan rules
+        run: ./hermesscan rules validate
 
       - name: Run HermesScan SARIF report
         run: |

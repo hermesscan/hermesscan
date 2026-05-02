@@ -97,7 +97,7 @@ Compare the `Get-FileHash` value with the matching line in `checksums.txt`.
 git clone https://github.com/hermesscan/hermesscan.git
 cd hermesscan
 go test ./...
-go build -ldflags "-X main.version=0.7.0" -o hermesscan ./cmd/hermesscan
+go build -ldflags "-X main.version=0.8.0" -o hermesscan ./cmd/hermesscan
 ./hermesscan version
 ```
 
@@ -105,6 +105,6 @@ Windows PowerShell:
 
 ```powershell
 go test .\...
-go build -ldflags "-X main.version=0.7.0" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.8.0" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe version
 ```
