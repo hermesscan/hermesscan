@@ -1,0 +1,11 @@
+/dist/
+/reports/
+/coverage/
+/tmp/
+/hermesscan
+/hermesscan.exe
+*.test
+*.out
+*.sarif
+*.log
+.DS_Store

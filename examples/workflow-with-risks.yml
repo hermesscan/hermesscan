@@ -1,0 +1,16 @@
+name: Risky Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@main
+      - run: npm ci
+      - run: docker compose up -d
+      - run: sleep 30
+      - run: psql -h localhost -p 5432 -c 'select 1'

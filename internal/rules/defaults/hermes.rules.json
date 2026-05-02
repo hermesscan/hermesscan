@@ -1,0 +1,247 @@
+[
+  {
+    "id": "HMS0001",
+    "name": "Sleep-based synchronization",
+    "severity": "Medium",
+    "fileTypes": [
+      "bash",
+      "powershell",
+      "yaml",
+      "makefile"
+    ],
+    "pattern": "(?i)\\b(sleep\\s+[0-9]+|Start-Sleep\\s+(-Seconds\\s+)?[0-9]+)",
+    "description": "Sleep-based synchronization can make CI jobs flaky or unnecessarily slow.",
+    "recommendation": "Prefer explicit readiness checks, health probes, retry loops with deadlines, or CI job dependencies.",
+    "category": "reliability",
+    "tags": [
+      "synchronization",
+      "flake-risk"
+    ]
+  },
+  {
+    "id": "HMS0002",
+    "name": "Fixed PostgreSQL port",
+    "severity": "High",
+    "fileTypes": [
+      "bash",
+      "powershell",
+      "yaml",
+      "docker",
+      "makefile"
+    ],
+    "pattern": "\\b5432\\b",
+    "description": "Fixed ports can collide on shared runners or concurrent local test runs.",
+    "recommendation": "Use isolated containers, dynamic ports, unique project names, or per-job network namespaces.",
+    "category": "isolation",
+    "tags": [
+      "ports",
+      "shared-runner"
+    ]
+  },
+  {
+    "id": "HMS0003",
+    "name": "Manual shell background orchestration",
+    "severity": "High",
+    "fileTypes": [
+      "bash",
+      "makefile"
+    ],
+    "pattern": "(^|[^&])&\\s*($|#)",
+    "description": "Background jobs inside CI scripts may indicate manual orchestration that is difficult to observe and clean up.",
+    "recommendation": "Move parallel work into the CI orchestrator DAG or add explicit lifecycle management and cleanup.",
+    "category": "orchestration",
+    "tags": [
+      "parallelism",
+      "shell"
+    ]
+  },
+  {
+    "id": "HMS0004",
+    "name": "Manual wait orchestration",
+    "severity": "Medium",
+    "fileTypes": [
+      "bash",
+      "makefile"
+    ],
+    "pattern": "(?i)\\bwait\\b",
+    "description": "Manual wait logic can hide job dependencies from the CI control plane.",
+    "recommendation": "Represent dependencies as CI jobs or document why process-level orchestration is required.",
+    "category": "orchestration",
+    "tags": [
+      "parallelism",
+      "shell"
+    ]
+  },
+  {
+    "id": "HMS0005",
+    "name": "PowerShell background job in CI path",
+    "severity": "High",
+    "fileTypes": [
+      "powershell"
+    ],
+    "pattern": "(?i)\\bStart-Job\\b",
+    "description": "PowerShell background jobs can outlive the intended script scope and complicate CI cleanup.",
+    "recommendation": "Prefer CI jobs, use try/finally cleanup, and explicitly stop/remove jobs when background work is necessary.",
+    "category": "orchestration",
+    "tags": [
+      "powershell",
+      "background-job"
+    ]
+  },
+  {
+    "id": "HMS0006",
+    "name": "PowerShell process lifecycle risk",
+    "severity": "Medium",
+    "fileTypes": [
+      "powershell"
+    ],
+    "pattern": "(?i)\\bStart-Process\\b",
+    "description": "Started processes can leak across build steps if they are not tracked and cleaned up.",
+    "recommendation": "Capture the process object, enforce timeouts, and clean up in a finally block.",
+    "category": "lifecycle",
+    "tags": [
+      "powershell",
+      "process"
+    ]
+  },
+  {
+    "id": "HMS0007",
+    "name": "Docker Compose service startup",
+    "severity": "Medium",
+    "fileTypes": [
+      "bash",
+      "powershell",
+      "yaml",
+      "makefile"
+    ],
+    "pattern": "(?i)docker\\s+compose\\s+up|docker-compose\\s+up",
+    "description": "Docker Compose can collide across concurrent jobs when project names, networks, volumes, or ports are shared.",
+    "recommendation": "Set a unique COMPOSE_PROJECT_NAME per CI job and ensure compose down runs during cleanup.",
+    "category": "isolation",
+    "tags": [
+      "docker",
+      "compose"
+    ]
+  },
+  {
+    "id": "HMS0008",
+    "name": "Shared temp path",
+    "severity": "Medium",
+    "fileTypes": [
+      "bash",
+      "powershell",
+      "yaml",
+      "makefile"
+    ],
+    "pattern": "(?i)(/tmp/|C:\\\\Temp|\\$env:TEMP|\\$env:TMP)",
+    "description": "Shared temporary paths can cause cross-job contamination on shared runners.",
+    "recommendation": "Use a unique per-job workspace or temporary directory derived from the CI run ID.",
+    "category": "isolation",
+    "tags": [
+      "filesystem",
+      "temp"
+    ]
+  },
+  {
+    "id": "HMS0009",
+    "name": "Mutable GitHub Action reference",
+    "severity": "Low",
+    "fileTypes": [
+      "yaml"
+    ],
+    "pattern": "uses:\\s+[^@\\s]+@(?:main|master|latest)",
+    "description": "Mutable action references can change without review and reduce workflow reproducibility.",
+    "recommendation": "Pin GitHub Actions to a specific version tag or commit SHA.",
+    "category": "supply-chain",
+    "tags": [
+      "github-actions",
+      "pinning"
+    ]
+  },
+  {
+    "id": "HMS0010",
+    "name": "Package install cache collision risk",
+    "severity": "Medium",
+    "fileTypes": [
+      "bash",
+      "powershell",
+      "yaml",
+      "makefile"
+    ],
+    "pattern": "(?i)\\b(npm\\s+install|npm\\s+ci|yarn\\s+install|pip\\s+install|dotnet\\s+restore|mvn\\s+dependency|mvn\\s+install)\\b",
+    "description": "Package managers may use shared caches that can behave poorly under concurrent jobs.",
+    "recommendation": "Use CI-managed caches with scoped keys and avoid shared writable cache directories across concurrent jobs.",
+    "category": "cache",
+    "tags": [
+      "package-manager"
+    ]
+  },
+  {
+    "id": "HMS0011",
+    "name": "Docker build cache contention risk",
+    "severity": "Medium",
+    "fileTypes": [
+      "bash",
+      "powershell",
+      "yaml",
+      "makefile"
+    ],
+    "pattern": "(?i)docker\\s+build|docker\\s+buildx\\s+build",
+    "description": "Concurrent Docker builds may contend over build cache or daemon state on shared runners.",
+    "recommendation": "Use isolated builders, unique cache scopes, or CI-provided build isolation.",
+    "category": "cache",
+    "tags": [
+      "docker",
+      "buildkit"
+    ]
+  },
+  {
+    "id": "HMS0012",
+    "name": "Native command exit code may be ignored",
+    "severity": "Medium",
+    "fileTypes": [
+      "powershell"
+    ],
+    "pattern": "(?i)^\\s*(docker|npm|yarn|pip|dotnet|mvn|git)\\s+",
+    "description": "Windows PowerShell 5.1 does not automatically throw when native commands return non-zero exit codes.",
+    "recommendation": "Check $LASTEXITCODE after native commands or wrap native invocations in a helper that throws on failure.",
+    "category": "reliability",
+    "tags": [
+      "powershell",
+      "native-command"
+    ]
+  },
+  {
+    "id": "HMS0013",
+    "name": "GitHub pull_request_target trigger",
+    "severity": "High",
+    "category": "supply-chain",
+    "tags": [
+      "github-actions",
+      "pull-request",
+      "permissions"
+    ],
+    "fileTypes": [
+      "yaml"
+    ],
+    "pattern": "(?i)\\bpull_request_target\\b",
+    "description": "The pull_request_target trigger can expose privileged repository context to pull-request workflows when used incorrectly.",
+    "recommendation": "Use pull_request for untrusted code or isolate pull_request_target jobs so they do not check out or execute attacker-controlled content."
+  },
+  {
+    "id": "HMS0014",
+    "name": "GitHub Actions write-all permissions",
+    "severity": "Medium",
+    "category": "supply-chain",
+    "tags": [
+      "github-actions",
+      "permissions"
+    ],
+    "fileTypes": [
+      "yaml"
+    ],
+    "pattern": "(?i)permissions:\\s*write-all",
+    "description": "Broad write-all workflow permissions increase blast radius if a job or action is compromised.",
+    "recommendation": "Grant the minimum required permissions explicitly, such as contents: read or pull-requests: write."
+  }
+]

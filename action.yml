@@ -1,0 +1,164 @@
+name: HermesScan
+description: Scan build scripts, CI scripts, and workflow files for accidental orchestration and shared-runner hazards.
+author: HermesScan
+
+inputs:
+  path:
+    description: Path to scan.
+    required: false
+    default: .
+  version:
+    description: HermesScan release version to download, such as 0.6.0. Use latest to download the latest release.
+    required: false
+    default: '0.6.0'
+  repository:
+    description: GitHub repository that hosts HermesScan release binaries.
+    required: false
+    default: hermesscan/hermesscan
+  format:
+    description: Report format: console, summary, markdown, json, sarif, or github.
+    required: false
+    default: summary
+  output:
+    description: Optional output file path.
+    required: false
+    default: ''
+  config:
+    description: Optional HermesScan config path.
+    required: false
+    default: ''
+  baseline:
+    description: Optional baseline path.
+    required: false
+    default: ''
+  fail-on:
+    description: Fail when findings meet severity: info, low, medium, high, critical, or none.
+    required: false
+    default: high
+  min-severity:
+    description: Only report findings at or above severity.
+    required: false
+    default: ''
+  category:
+    description: Optional rule category filter.
+    required: false
+    default: ''
+  tag:
+    description: Optional rule tag filter.
+    required: false
+    default: ''
+  changed-only:
+    description: Scan only files changed according to git.
+    required: false
+    default: 'false'
+  changed-base:
+    description: Optional git base ref or commit for changed-only scans.
+    required: false
+    default: ''
+  github-annotations:
+    description: Emit GitHub Actions workflow annotations.
+    required: false
+    default: 'false'
+  no-fail:
+    description: Do not return a failing exit code.
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - name: Download HermesScan
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        repo='${{ inputs.repository }}'
+        version='${{ inputs.version }}'
+
+        os_name=''
+        arch_name=''
+        extension=''
+
+        case "${RUNNER_OS}" in
+          Linux) os_name='linux' ;;
+          macOS) os_name='darwin' ;;
+          Windows) os_name='windows'; extension='.exe' ;;
+          *) echo "Unsupported runner OS: ${RUNNER_OS}" >&2; exit 2 ;;
+        esac
+
+        case "${RUNNER_ARCH}" in
+          X64) arch_name='amd64' ;;
+          ARM64) arch_name='arm64' ;;
+          *) echo "Unsupported runner architecture: ${RUNNER_ARCH}" >&2; exit 2 ;;
+        esac
+
+        asset="hermesscan-${os_name}-${arch_name}${extension}"
+        if [ "${version}" = "latest" ]; then
+          url="https://github.com/${repo}/releases/latest/download/${asset}"
+        else
+          tag="${version}"
+          case "${tag}" in
+            v*) ;;
+            *) tag="v${tag}" ;;
+          esac
+          url="https://github.com/${repo}/releases/download/${tag}/${asset}"
+        fi
+
+        mkdir -p "${RUNNER_TEMP}/hermesscan"
+        echo "Downloading ${url}"
+        curl -fsSL "${url}" -o "${RUNNER_TEMP}/hermesscan/hermesscan${extension}"
+        chmod +x "${RUNNER_TEMP}/hermesscan/hermesscan${extension}"
+        echo "${RUNNER_TEMP}/hermesscan" >> "${GITHUB_PATH}"
+
+    - name: Run HermesScan
+      shell: bash
+      run: |
+        set -euo pipefail
+
+        bin='hermesscan'
+        if [ "${RUNNER_OS}" = "Windows" ]; then
+          bin='hermesscan.exe'
+        fi
+
+        args=(scan '${{ inputs.path }}')
+        args+=(--format '${{ inputs.format }}')
+
+        if [ -n '${{ inputs.output }}' ]; then
+          args+=(--output '${{ inputs.output }}')
+        fi
+        if [ -n '${{ inputs.config }}' ]; then
+          args+=(--config '${{ inputs.config }}')
+        fi
+        if [ -n '${{ inputs.baseline }}' ]; then
+          args+=(--baseline '${{ inputs.baseline }}')
+        fi
+        if [ -n '${{ inputs.fail-on }}' ]; then
+          args+=(--fail-on '${{ inputs.fail-on }}')
+        fi
+        if [ -n '${{ inputs.min-severity }}' ]; then
+          args+=(--min-severity '${{ inputs.min-severity }}')
+        fi
+        if [ -n '${{ inputs.category }}' ]; then
+          args+=(--category '${{ inputs.category }}')
+        fi
+        if [ -n '${{ inputs.tag }}' ]; then
+          args+=(--tag '${{ inputs.tag }}')
+        fi
+        if [ '${{ inputs.changed-only }}' = 'true' ]; then
+          args+=(--changed-only)
+        fi
+        if [ -n '${{ inputs.changed-base }}' ]; then
+          args+=(--changed-base '${{ inputs.changed-base }}')
+        fi
+        if [ '${{ inputs.github-annotations }}' = 'true' ]; then
+          args+=(--github-annotations)
+        fi
+        if [ '${{ inputs.no-fail }}' = 'true' ]; then
+          args+=(--no-fail)
+        fi
+
+        "${bin}" "${args[@]}"
+
+branding:
+  icon: search
+  color: purple

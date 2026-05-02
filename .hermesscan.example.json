@@ -1,0 +1,21 @@
+{
+  "rules": "",
+  "include": [],
+  "exclude": [
+    "dist/**",
+    "build/**",
+    "node_modules/**",
+    "vendor/**",
+    "reports/**",
+    "coverage/**",
+    "tmp/**",
+    ".git/**"
+  ],
+  "disabledRules": [],
+  "severityOverrides": {
+    "HMS0010": "Low"
+  },
+  "failOn": "high",
+  "minSeverity": "",
+  "suppressionsEnabled": true
+}
