@@ -32,15 +32,35 @@ func TestDefaultRulePrecisionMutableActionAllowsVersionTags(t *testing.T) {
 	}
 }
 
-func TestDefaultRulePrecisionBroadCacheAllowsLockfileHash(t *testing.T) {
-	noRisk := scanDefaultRuleFixture(t, "workflow.yml", "key: ${{ runner.os }}-${{ hashFiles('**/go.sum') }}\n", "HMS0016")
-	if len(noRisk.Findings) != 0 {
-		t.Fatalf("expected no specific-cache-key findings, got %#v", noRisk.Findings)
+func TestDefaultRulePrecisionBroadCacheKeySpecificity(t *testing.T) {
+	bareRunnerOS := scanDefaultRuleFixture(t, "workflow.yml", "key: ${{ runner.os }}\n", "HMS0016")
+	if len(bareRunnerOS.Findings) != 1 {
+		t.Fatalf("expected one bare runner OS cache-key finding, got %#v", bareRunnerOS.Findings)
 	}
 
-	risk := scanDefaultRuleFixture(t, "workflow.yml", "key: ${{ runner.os }}\n", "HMS0016")
-	if len(risk.Findings) != 1 {
-		t.Fatalf("expected one broad-cache-key finding, got %#v", risk.Findings)
+	staticPrefix := scanDefaultRuleFixture(t, "workflow.yml", "key: npm-${{ runner.os }}\n", "HMS0016")
+	if len(staticPrefix.Findings) != 1 {
+		t.Fatalf("expected one static-prefix cache-key finding, got %#v", staticPrefix.Findings)
+	}
+
+	lockfileHash := scanDefaultRuleFixture(t, "workflow.yml", "key: ${{ runner.os }}-${{ hashFiles('**/go.sum') }}\n", "HMS0016")
+	if len(lockfileHash.Findings) != 0 {
+		t.Fatalf("expected no lockfile-hash cache-key findings, got %#v", lockfileHash.Findings)
+	}
+
+	matrixAndLockfileHash := scanDefaultRuleFixture(t, "workflow.yml", "key: npm-${{ runner.os }}-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}\n", "HMS0016")
+	if len(matrixAndLockfileHash.Findings) != 0 {
+		t.Fatalf("expected no matrix/lockfile cache-key findings, got %#v", matrixAndLockfileHash.Findings)
+	}
+
+	refSpecific := scanDefaultRuleFixture(t, "workflow.yml", "key: deps-${{ runner.os }}-${{ github.ref }}\n", "HMS0016")
+	if len(refSpecific.Findings) != 0 {
+		t.Fatalf("expected no ref-specific cache-key findings, got %#v", refSpecific.Findings)
+	}
+
+	lockfileName := scanDefaultRuleFixture(t, "workflow.yml", "key: pip-${{ runner.os }}-requirements.txt\n", "HMS0016")
+	if len(lockfileName.Findings) != 0 {
+		t.Fatalf("expected no lockfile-name cache-key findings, got %#v", lockfileName.Findings)
 	}
 }
 

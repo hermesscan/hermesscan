@@ -12,6 +12,7 @@
 ### Changed
 
 - Refined the Docker Compose startup rule to ignore commands with explicit project-name context.
+- Refined the GitHub Actions broad cache key rule to flag static `runner.os` cache keys while ignoring lockfile, hash, ref, SHA, and matrix-specific keys.
 
 ## 0.7.0 - 2026-05-02
 

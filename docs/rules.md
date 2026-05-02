@@ -265,11 +265,17 @@ Self-hosted runners can share filesystem, Docker, network, and cache state acros
 **Tags:** `github-actions`, `cache`  
 **File types:** `yaml`  
 
-Broad cache keys can cause unrelated branches or dependency states to reuse the same writable cache namespace.
+Broad cache keys based mostly on runner OS can cause unrelated branches or dependency states to reuse the same writable cache namespace.
 
-**Recommendation:** Include dependency lockfile hashes or job-specific inputs in cache keys, such as hashFiles('**/package-lock.json').
+**Recommendation:** Include dependency lockfile hashes, matrix dimensions, or source revision inputs in cache keys, such as hashFiles('**/package-lock.json').
 
 ```text
-(?i)key:\s*\$\{\{\s*runner\.os\s*\}\}\s*$
+(?i)^\s*key:\s*[^\r\n]*\$\{\{\s*runner\.os\s*\}\}[^\r\n]*$
+```
+
+**Exclude pattern:**
+
+```text
+(?i)hashFiles\s*\(|package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|go\.sum|Cargo\.lock|requirements(?:\.txt)?|poetry\.lock|Pipfile\.lock|composer\.lock|Gemfile\.lock|github\.(?:ref|sha)|matrix\.
 ```
 

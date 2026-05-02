@@ -277,8 +277,9 @@
     "fileTypes": [
       "yaml"
     ],
-    "pattern": "(?i)key:\\s*\\$\\{\\{\\s*runner\\.os\\s*\\}\\}\\s*$",
-    "description": "Broad cache keys can cause unrelated branches or dependency states to reuse the same writable cache namespace.",
-    "recommendation": "Include dependency lockfile hashes or job-specific inputs in cache keys, such as hashFiles('**/package-lock.json')."
+    "pattern": "(?i)^\\s*key:\\s*[^\\r\\n]*\\$\\{\\{\\s*runner\\.os\\s*\\}\\}[^\\r\\n]*$",
+    "excludePattern": "(?i)hashFiles\\s*\\(|package-lock\\.json|npm-shrinkwrap\\.json|pnpm-lock\\.yaml|yarn\\.lock|go\\.sum|Cargo\\.lock|requirements(?:\\.txt)?|poetry\\.lock|Pipfile\\.lock|composer\\.lock|Gemfile\\.lock|github\\.(?:ref|sha)|matrix\\.",
+    "description": "Broad cache keys based mostly on runner OS can cause unrelated branches or dependency states to reuse the same writable cache namespace.",
+    "recommendation": "Include dependency lockfile hashes, matrix dimensions, or source revision inputs in cache keys, such as hashFiles('**/package-lock.json')."
   }
 ]
