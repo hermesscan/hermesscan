@@ -56,6 +56,7 @@ Additional guides:
 - [GitHub Action usage](docs/github-action.md)
 - [Baseline adoption guide](docs/baseline-adoption.md)
 - [Rule reference](docs/rules.md)
+- [Rule authoring guide](docs/rule-authoring.md)
 - [Changed-file scans](docs/changed-only.md)
 - [v0.7.0 release notes](docs/release-v0.7.0.md)
 

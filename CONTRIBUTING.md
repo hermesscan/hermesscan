@@ -32,6 +32,8 @@ go build -ldflags "-X main.version=0.8.0" -o .\hermesscan.exe .\cmd\hermesscan
 
 ## Rule changes
 
+See [docs/rule-authoring.md](docs/rule-authoring.md) for the full rule model, contextual precision fields, and validation workflow.
+
 Rules live in:
 
 ```text
@@ -50,8 +52,13 @@ Each rule should include:
 - description
 - recommendation
 
-Add or update tests when changing rules or scanner behavior.
-Run `hermesscan rules validate` before committing rule catalog changes.
+Rule-change checklist:
+
+- Update both `rules/hermes.rules.json` and `internal/rules/defaults/hermes.rules.json`.
+- Add or update precision tests in `internal/scanner/rule_precision_test.go`.
+- Run `hermesscan rules validate`.
+- Regenerate `docs/rules.md`.
+- Run the local validation commands above.
 
 ## Rule severity guidance
 
