@@ -9,6 +9,7 @@
 - Added tests that keep the repository rule catalog in sync with the embedded default catalog.
 - Added default-rule precision tests for common false-positive cases.
 - Added a rule authoring guide for rule fields, contextual precision patterns, and validation workflow.
+- Added a GitHub Action workflow example that combines SARIF upload, a report artifact, and a separate summary gate.
 
 ### Changed
 

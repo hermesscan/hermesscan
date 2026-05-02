@@ -152,6 +152,70 @@ jobs:
           sarif_file: reports/hermes-scan.sarif
 ```
 
+## SARIF plus report artifact
+
+Use a non-failing reporting pass for SARIF and retained reports, then run a separate summary gate that controls the job result.
+
+```yaml
+name: HermesScan reporting
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  hermesscan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate HermesScan SARIF
+        uses: hermesscan/hermesscan@v0.7.0
+        with:
+          path: .
+          format: sarif
+          output: reports/hermes-scan.sarif
+          no-fail: 'true'
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: reports/hermes-scan.sarif
+
+      - name: Generate HermesScan Markdown report
+        uses: hermesscan/hermesscan@v0.7.0
+        with:
+          path: .
+          format: markdown
+          output: reports/hermes-scan.md
+          no-fail: 'true'
+
+      - name: Upload HermesScan report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hermesscan-report
+          path: reports/
+
+      - name: Run HermesScan gate
+        uses: hermesscan/hermesscan@v0.7.0
+        with:
+          path: .
+          format: summary
+          fail-on: high
+```
+
 ## Use a baseline
 
 ```yaml

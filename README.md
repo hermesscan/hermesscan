@@ -222,6 +222,8 @@ SARIF upload:
     sarif_file: reports/hermes-scan.sarif
 ```
 
+For a complete workflow that uploads SARIF, stores a Markdown report artifact, and runs a separate summary gate, see [GitHub Action usage](docs/github-action.md#sarif-plus-report-artifact).
+
 ## Reporting false positives
 
 HermesScan is rule-based and may flag legitimate patterns. If you find a false positive, open an issue with:
