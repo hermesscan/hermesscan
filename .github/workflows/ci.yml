@@ -32,7 +32,11 @@ jobs:
         run: go vet ./...
 
       - name: Build
-        run: go build -o hermesscan ./cmd/hermesscan
+        run: go build -ldflags "-X main.version=0.7.0" -o hermesscan ./cmd/hermesscan
 
       - name: Smoke test
-        run: ./hermesscan scan ./examples --summary
+        run: |
+          ./hermesscan version
+          ./hermesscan rules docs --output reports/hermesscan-rules.md
+          ./hermesscan scan ./examples --summary --no-fail
+          ./hermesscan scan . --summary --exclude 'examples/**' --no-fail

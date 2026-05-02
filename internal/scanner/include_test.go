@@ -27,7 +27,7 @@ func TestIncludeFiltersCandidates(t *testing.T) {
 
 	rule := rules.Rule{ID: "HMS0001", Name: "sleep", Severity: "Medium", FileTypes: []string{"bash"}, Pattern: `sleep\s+\d+`}
 	includePattern := filepath.ToSlash(filepath.Join(root, "keep")) + "/**"
-	options := NewOptionsFromConfigValues(nil, []string{includePattern}, nil, nil, true)
+	options := NewOptionsFromConfigValues(nil, []string{includePattern}, nil, nil, nil, true)
 	result, err := ScanWithOptions(root, []rules.Rule{rule}, options)
 	if err != nil {
 		t.Fatalf("scan failed: %v", err)

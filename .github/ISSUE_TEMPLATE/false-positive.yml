@@ -1,0 +1,55 @@
+name: False positive
+about: Report a HermesScan finding that appears to be safe in context.
+title: "False positive: <RULE_ID> in <file type>"
+labels: [false-positive, rules]
+body:
+  - type: input
+    id: rule-id
+    attributes:
+      label: Rule ID
+      description: Example: HMS0001
+      placeholder: HMS0001
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: HermesScan version
+      placeholder: 0.7.0
+    validations:
+      required: true
+  - type: dropdown
+    id: file-type
+    attributes:
+      label: File type
+      options:
+        - bash
+        - powershell
+        - yaml
+        - docker
+        - makefile
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Minimal example
+      description: Paste the smallest example that reproduces the finding.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: why-safe
+    attributes:
+      label: Why is this safe in your case?
+      description: Explain the CI environment, isolation model, runner behavior, or cleanup pattern that makes this acceptable.
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: HermesScan output
+      render: text
+    validations:
+      required: false

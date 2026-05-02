@@ -67,7 +67,11 @@ func ScanWithOptions(root string, loadedRules []rules.Rule, options Options) (Re
 func compileRules(loadedRules []rules.Rule, options Options) ([]compiledRule, error) {
 	compiled := make([]compiledRule, 0, len(loadedRules))
 	for _, rule := range loadedRules {
-		if options.DisabledRules != nil && options.DisabledRules[strings.ToUpper(rule.ID)] {
+		ruleID := strings.ToUpper(strings.TrimSpace(rule.ID))
+		if len(options.EnabledRules) > 0 && !options.EnabledRules[ruleID] {
+			continue
+		}
+		if options.DisabledRules != nil && options.DisabledRules[ruleID] {
 			continue
 		}
 		if !ruleMatchesCategoryAndTag(rule, options) {
@@ -292,7 +296,7 @@ func candidateMatchesAny(path string, patterns []string) bool {
 }
 
 // NewOptionsFromConfigValues creates Options from config-shaped values.
-func NewOptionsFromConfigValues(exclude []string, include []string, disabled []string, overrides map[string]string, suppressionsEnabled bool) Options {
+func NewOptionsFromConfigValues(exclude []string, include []string, enabled []string, disabled []string, overrides map[string]string, suppressionsEnabled bool) Options {
 	normalizedOverrides := make(map[string]string)
 	for key, value := range overrides {
 		normalizedOverrides[strings.ToUpper(strings.TrimSpace(key))] = value
@@ -300,6 +304,7 @@ func NewOptionsFromConfigValues(exclude []string, include []string, disabled []s
 	return Options{
 		Exclude:             exclude,
 		Include:             include,
+		EnabledRules:        normalizeRuleSet(enabled),
 		DisabledRules:       normalizeRuleSet(disabled),
 		SeverityOverrides:   normalizedOverrides,
 		SuppressionsEnabled: suppressionsEnabled,

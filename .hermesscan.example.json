@@ -11,7 +11,10 @@
     "tmp/**",
     ".git/**"
   ],
+  "enabledRules": [],
   "disabledRules": [],
+  "categories": [],
+  "tags": [],
   "severityOverrides": {
     "HMS0010": "Low"
   },

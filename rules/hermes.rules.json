@@ -20,7 +20,7 @@
   },
   {
     "id": "HMS0002",
-    "name": "Fixed PostgreSQL port",
+    "name": "Fixed PostgreSQL port exposure",
     "severity": "High",
     "fileTypes": [
       "bash",
@@ -29,13 +29,14 @@
       "docker",
       "makefile"
     ],
-    "pattern": "\\b5432\\b",
-    "description": "Fixed ports can collide on shared runners or concurrent local test runs.",
-    "recommendation": "Use isolated containers, dynamic ports, unique project names, or per-job network namespaces.",
+    "pattern": "(?i)(ports?:|--publish|-p|PGPORT|POSTGRES_PORT|DATABASE_URL|localhost:|127\\.0\\.0\\.1:|0\\.0\\.0\\.0:).{0,80}\\b5432\\b|\\b5432\\s*:\\s*5432\\b|\\b5432/tcp\\b",
+    "description": "Fixed PostgreSQL port exposure can collide on shared runners or concurrent local test runs.",
+    "recommendation": "Use isolated containers, dynamic ports, unique project names, or per-job network namespaces; avoid binding host port 5432 in shared CI.",
     "category": "isolation",
     "tags": [
       "ports",
-      "shared-runner"
+      "shared-runner",
+      "postgresql"
     ]
   },
   {
@@ -161,7 +162,7 @@
   {
     "id": "HMS0010",
     "name": "Package install cache collision risk",
-    "severity": "Medium",
+    "severity": "Low",
     "fileTypes": [
       "bash",
       "powershell",
@@ -169,7 +170,7 @@
       "makefile"
     ],
     "pattern": "(?i)\\b(npm\\s+install|npm\\s+ci|yarn\\s+install|pip\\s+install|dotnet\\s+restore|mvn\\s+dependency|mvn\\s+install)\\b",
-    "description": "Package managers may use shared caches that can behave poorly under concurrent jobs.",
+    "description": "Package managers may use shared caches that can behave poorly under concurrent jobs. This rule is advisory unless paired with shared cache paths or manual parallelism.",
     "recommendation": "Use CI-managed caches with scoped keys and avoid shared writable cache directories across concurrent jobs.",
     "category": "cache",
     "tags": [
@@ -243,5 +244,38 @@
     "pattern": "(?i)permissions:\\s*write-all",
     "description": "Broad write-all workflow permissions increase blast radius if a job or action is compromised.",
     "recommendation": "Grant the minimum required permissions explicitly, such as contents: read or pull-requests: write."
+  },
+  {
+    "id": "HMS0015",
+    "name": "GitHub Actions self-hosted runner",
+    "severity": "Medium",
+    "category": "isolation",
+    "tags": [
+      "github-actions",
+      "runner",
+      "self-hosted"
+    ],
+    "fileTypes": [
+      "yaml"
+    ],
+    "pattern": "(?i)runs-on:\\s*(\\[[^\\]]*)?self-hosted\\b",
+    "description": "Self-hosted runners can share filesystem, Docker, network, and cache state across jobs when not isolated carefully.",
+    "recommendation": "Use ephemeral self-hosted runners where possible, enforce per-job cleanup, and avoid shared writable state between jobs."
+  },
+  {
+    "id": "HMS0016",
+    "name": "GitHub Actions broad cache key",
+    "severity": "Medium",
+    "category": "cache",
+    "tags": [
+      "github-actions",
+      "cache"
+    ],
+    "fileTypes": [
+      "yaml"
+    ],
+    "pattern": "(?i)key:\\s*\\$\\{\\{\\s*runner\\.os\\s*\\}\\}\\s*$",
+    "description": "Broad cache keys can cause unrelated branches or dependency states to reuse the same writable cache namespace.",
+    "recommendation": "Include dependency lockfile hashes or job-specific inputs in cache keys, such as hashFiles('**/package-lock.json')."
   }
 ]

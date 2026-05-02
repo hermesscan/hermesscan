@@ -1,6 +1,8 @@
-﻿# GitHub Action usage
+# GitHub Action usage
 
 HermesScan includes a composite GitHub Action wrapper in `action.yml`.
+
+> Before the `v0.7.0` tag exists, use a local workflow step that builds HermesScan from source, or temporarily test with `uses: hermesscan/hermesscan@main`. For required gates, pin to a release tag or commit SHA.
 
 
 ## Action inputs
@@ -8,7 +10,7 @@ HermesScan includes a composite GitHub Action wrapper in `action.yml`.
 | Input | Default | Description |
 |---|---:|---|
 | `path` | `.` | Path to scan. |
-| `version` | `0.6.1` | HermesScan release binary version to download. Use `latest` only when you intentionally want the newest release binary. |
+| `version` | `0.7.0` | HermesScan release binary version to download. Use `latest` only when you intentionally want the newest release binary. |
 | `repository` | `hermesscan/hermesscan` | Repository that hosts HermesScan release binaries. |
 | `format` | `summary` | Report format: `console`, `summary`, `markdown`, `json`, `sarif`, or `github`. |
 | `output` | empty | Optional report output file. |
@@ -18,12 +20,13 @@ HermesScan includes a composite GitHub Action wrapper in `action.yml`.
 | `min-severity` | empty | Only report findings at or above this severity. |
 | `category` | empty | Restrict scanning to one rule category. |
 | `tag` | empty | Restrict scanning to rules with one tag. |
+| `rule` | empty | Restrict scanning to one rule ID. Use the CLI directly for multiple `--rule` values. |
 | `changed-only` | `false` | Scan only files changed according to Git. |
 | `changed-base` | empty | Base ref or commit for changed-file scans. |
 | `github-annotations` | `false` | Emit GitHub Actions annotations. |
 | `no-fail` | `false` | Always return success even when findings are detected. |
 
-The action wrapper is pinned by `uses: hermesscan/hermesscan@v0.6.1`, and the downloaded CLI defaults to version `0.6.1`. Override `version` only when you intentionally want a different release binary.
+After `v0.7.0` is published, the action wrapper is pinned by `uses: hermesscan/hermesscan@v0.7.0`, and the downloaded CLI defaults to version `0.7.0`. Override `version` only when you intentionally want a different release binary.
 
 ## Basic pull-request gate
 
@@ -48,7 +51,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run HermesScan
-        uses: hermesscan/hermesscan@v0.6.1
+        uses: hermesscan/hermesscan@v0.7.0
         with:
           path: .
           format: summary
@@ -59,7 +62,7 @@ jobs:
 
 ```yaml
 - name: Run HermesScan annotations
-  uses: hermesscan/hermesscan@v0.6.1
+  uses: hermesscan/hermesscan@v0.7.0
   with:
     path: .
     github-annotations: 'true'
@@ -69,6 +72,21 @@ jobs:
 ```
 
 You can also request annotation output by setting `format: github`; `github-annotations: 'true'` is the clearer form and is preferred in examples.
+
+## Changed-file pull-request scan
+
+```yaml
+- name: Run HermesScan on changed files
+  uses: hermesscan/hermesscan@v0.7.0
+  with:
+    path: .
+    changed-only: 'true'
+    changed-base: origin/main
+    format: summary
+    fail-on: high
+```
+
+Use `actions/checkout` with `fetch-depth: 0` when using changed-file scans so the base ref is available locally.
 
 ## SARIF for GitHub Code Scanning
 
@@ -86,6 +104,7 @@ on:
 permissions:
   contents: read
   security-events: write
+  actions: read
 
 jobs:
   hermesscan-sarif:
@@ -97,7 +116,7 @@ jobs:
           fetch-depth: 0
 
       - name: Generate HermesScan SARIF
-        uses: hermesscan/hermesscan@v0.6.1
+        uses: hermesscan/hermesscan@v0.7.0
         with:
           path: .
           format: sarif
@@ -105,7 +124,7 @@ jobs:
           no-fail: 'true'
 
       - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: reports/hermes-scan.sarif
 ```
@@ -114,7 +133,7 @@ jobs:
 
 ```yaml
 - name: Run HermesScan with baseline
-  uses: hermesscan/hermesscan@v0.6.1
+  uses: hermesscan/hermesscan@v0.7.0
   with:
     path: .
     baseline: .hermesscan-baseline.json
@@ -126,7 +145,7 @@ jobs:
 For production use, pin the action to a release tag or commit SHA.
 
 ```yaml
-uses: hermesscan/hermesscan@v0.6.1
+uses: hermesscan/hermesscan@v0.7.0
 ```
 
 Avoid floating references such as `@main` for required gates.

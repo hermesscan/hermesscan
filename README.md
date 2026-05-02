@@ -1,4 +1,4 @@
-﻿# HermesScan
+# HermesScan
 
 [![CI](https://github.com/hermesscan/hermesscan/actions/workflows/ci.yml/badge.svg)](https://github.com/hermesscan/hermesscan/actions/workflows/ci.yml)
 [![HermesScan](https://github.com/hermesscan/hermesscan/actions/workflows/hermes-scan.yml/badge.svg)](https://github.com/hermesscan/hermesscan/actions/workflows/hermes-scan.yml)
@@ -11,16 +11,18 @@ HermesScan is **not** a CI platform. It is a scanner and quality gate for the sc
 
 ## Status
 
-Current version: `0.6.1`
+Current development version: `0.7.0`
 
-Phase 6 focuses on GitHub adoption and packaging polish:
+> HermesScan is currently in public preview. Rules are intentionally conservative and may evolve as the scanner matures.
 
-- normalized GitHub Actions annotation paths
-- first-party composite GitHub Action wrapper
-- installation docs for Windows, Linux, and macOS
-- GitHub Action and SARIF usage docs
-- module path updated to `github.com/hermesscan/hermesscan`
-- contribution guidance
+Version 0.7.0 focuses on rule quality and adoption polish:
+
+- generated rule reference documentation
+- single-rule scanning with `--rule`
+- rule inventory commands for categories and tags
+- configuration filters for enabled rules, categories, and tags
+- refined fixed-port and package-cache rule behavior
+- new GitHub Actions rules for self-hosted runners and broad cache keys
 
 ## Quick start from source
 
@@ -28,7 +30,7 @@ Phase 6 focuses on GitHub adoption and packaging polish:
 
 ```powershell
 go test .\...
-go build -ldflags "-X main.version=0.6.1" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.7.0" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe version
 .\hermesscan.exe scan .\examples --summary --no-fail
 ```
@@ -37,7 +39,7 @@ go build -ldflags "-X main.version=0.6.1" -o .\hermesscan.exe .\cmd\hermesscan
 
 ```bash
 go test ./...
-go build -ldflags "-X main.version=0.6.1" -o ./hermesscan ./cmd/hermesscan
+go build -ldflags "-X main.version=0.7.0" -o ./hermesscan ./cmd/hermesscan
 ./hermesscan version
 ./hermesscan scan ./examples --summary --no-fail
 ```
@@ -45,6 +47,15 @@ go build -ldflags "-X main.version=0.6.1" -o ./hermesscan ./cmd/hermesscan
 ## Install
 
 See [docs/install.md](docs/install.md).
+
+Additional guides:
+
+- [GitHub Action usage](docs/github-action.md)
+- [Baseline adoption guide](docs/baseline-adoption.md)
+- [Rule reference](docs/rules.md)
+- [Changed-file scans](docs/changed-only.md)
+- [v0.7.0 release notes](docs/release-v0.7.0.md)
+- [v0.7.0 release checklist](docs/release-v0.7.0-checklist.md)
 
 Short Windows development note: PowerShell does not execute programs from the current directory by bare name. Use:
 
@@ -65,6 +76,9 @@ hermesscan scan [path]
 hermesscan init
 hermesscan rules list
 hermesscan rules show RULE_ID
+hermesscan rules docs [--output docs/rules.md]
+hermesscan rules categories
+hermesscan rules tags
 hermesscan version
 ```
 
@@ -142,6 +156,12 @@ Scan only rules tagged with `docker`:
 .\hermesscan.exe scan . --tag docker --summary --no-fail
 ```
 
+Scan only selected rule IDs:
+
+```powershell
+.\hermesscan.exe scan . --rule HMS0002 --rule HMS0013 --summary --no-fail
+```
+
 Scan only files changed from `HEAD`:
 
 ```powershell
@@ -158,11 +178,11 @@ Scan only files changed from a base ref:
 
 See [docs/github-action.md](docs/github-action.md).
 
-Basic usage. The action tag and downloaded CLI version are both `0.6.1` by default:
+Basic usage after the `v0.7.0` tag is published. The action tag and downloaded CLI version are both `0.7.0` by default:
 
 ```yaml
 - name: Run HermesScan
-  uses: hermesscan/hermesscan@v0.6.1
+  uses: hermesscan/hermesscan@v0.7.0
   with:
     path: .
     format: summary
@@ -173,7 +193,7 @@ SARIF upload:
 
 ```yaml
 - name: Generate HermesScan SARIF
-  uses: hermesscan/hermesscan@v0.6.1
+  uses: hermesscan/hermesscan@v0.7.0
   with:
     path: .
     format: sarif
@@ -181,10 +201,21 @@ SARIF upload:
     no-fail: 'true'
 
 - name: Upload SARIF
-  uses: github/codeql-action/upload-sarif@v3
+  uses: github/codeql-action/upload-sarif@v4
   with:
     sarif_file: reports/hermes-scan.sarif
 ```
+
+## Reporting false positives
+
+HermesScan is rule-based and may flag legitimate patterns. If you find a false positive, open an issue with:
+
+- the rule ID,
+- the matched file type,
+- a minimal code example,
+- why the pattern is safe in your case.
+
+Use inline suppressions or a baseline only when the finding has been reviewed and accepted.
 
 ## Configuration
 
@@ -210,7 +241,10 @@ Example `.hermesscan.json`:
     "tmp/**",
     ".git/**"
   ],
+  "enabledRules": [],
   "disabledRules": [],
+  "categories": [],
+  "tags": [],
   "severityOverrides": {
     "HMS0010": "Low"
   },
@@ -269,11 +303,38 @@ Suppress a rule for the whole file:
 # hermesscan:disable-file HMS0001
 ```
 
-## Rule inventory
+## Rule inventory and documentation
 
 ```powershell
 .\hermesscan.exe rules list
 .\hermesscan.exe rules show HMS0001
+.\hermesscan.exe rules categories
+.\hermesscan.exe rules tags
+.\hermesscan.exe rules docs --output .\docs\rules.md
+```
+
+## Generate rule reference
+
+Regenerate the committed rule reference after rule changes:
+
+```powershell
+.\hermesscan.exe rules docs --output .\docs\rules.md
+```
+
+
+Commit `docs/rules.md` with releases so users can review the active rule catalog without running the CLI first.
+
+## Release checklist
+
+Before tagging a release:
+
+```powershell
+go test .\...
+go vet .\...
+go build -ldflags "-X main.version=0.7.0" -o .\hermesscan.exe .\cmd\hermesscan
+.\hermesscan.exe version
+.\hermesscan.exe rules docs --output .\docs\rules.md
+.\hermesscan.exe scan . --summary --exclude "examples/**" --no-fail
 ```
 
 ## Build release binaries
@@ -281,7 +342,7 @@ Suppress a rule for the whole file:
 PowerShell 5.1-compatible build script:
 
 ```powershell
-.\scripts\Build-HermesScan.ps1 -AllTargets -Version 0.6.1
+.\scripts\Build-HermesScan.ps1 -AllTargets -Version 0.7.0
 ```
 
 Outputs are written to `dist/` with `.sha256` checksum files.

@@ -6,6 +6,7 @@ import "strings"
 type Options struct {
 	Exclude             []string
 	Include             []string
+	EnabledRules        map[string]bool
 	DisabledRules       map[string]bool
 	SeverityOverrides   map[string]string
 	SuppressionsEnabled bool

@@ -1,4 +1,4 @@
-﻿name: HermesScan
+name: HermesScan
 description: Scan build scripts, CI scripts, and workflow files for accidental orchestration and shared-runner hazards.
 author: HermesScan
 
@@ -8,9 +8,9 @@ inputs:
     required: false
     default: .
   version:
-    description: HermesScan release version to download, such as 0.6.1. Use latest to download the latest release.
+    description: HermesScan release version to download, such as 0.7.0. Use latest to download the latest release.
     required: false
-    default: '0.6.1'
+    default: '0.7.0'
   repository:
     description: GitHub repository that hosts HermesScan release binaries.
     required: false
@@ -45,6 +45,10 @@ inputs:
     default: ''
   tag:
     description: Optional rule tag filter.
+    required: false
+    default: ''
+  rule:
+    description: Optional rule ID filter. Provide one rule ID; use CLI directly for multiple rule IDs.
     required: false
     default: ''
   changed-only:
@@ -143,6 +147,9 @@ runs:
         fi
         if [ -n '${{ inputs.tag }}' ]; then
           args+=(--tag '${{ inputs.tag }}')
+        fi
+        if [ -n '${{ inputs.rule }}' ]; then
+          args+=(--rule '${{ inputs.rule }}')
         fi
         if [ '${{ inputs.changed-only }}' = 'true' ]; then
           args+=(--changed-only)

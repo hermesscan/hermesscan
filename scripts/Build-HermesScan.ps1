@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 Builds HermesScan native binaries.
 
@@ -25,7 +25,7 @@ Do not create SHA256 checksum files.
 Shows what would be built.
 
 .EXAMPLE
-.\scripts\Build-HermesScan.ps1 -AllTargets -Version 0.6.1
+.\scripts\Build-HermesScan.ps1 -AllTargets -Version 0.7.0
 
 Builds cross-platform binaries into .\dist and writes checksums.
 
@@ -48,7 +48,7 @@ param(
     [switch]$AllTargets,
 
     [Parameter()]
-    [string]$Version = '0.6.1',
+    [string]$Version = '0.7.0',
 
     [Parameter()]
     [switch]$SkipChecksum

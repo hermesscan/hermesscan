@@ -1,0 +1,62 @@
+name: Release smoke test
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to smoke test, for example 0.7.0'
+        required: true
+        default: '0.7.0'
+  release:
+    types:
+      - published
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Smoke test release binary
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            asset: hermesscan-linux-amd64
+            binary: hermesscan
+          - os: windows-latest
+            asset: hermesscan-windows-amd64.exe
+            binary: hermesscan.exe
+          - os: macos-latest
+            asset: hermesscan-darwin-arm64
+            binary: hermesscan
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Determine version
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF_NAME#v}"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Download release binary
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${{ steps.version.outputs.version }}"
+          URL="https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}/${{ matrix.asset }}"
+          echo "Downloading $URL"
+          curl -fsSL "$URL" -o "${{ matrix.binary }}"
+          chmod +x "${{ matrix.binary }}"
+
+      - name: Verify version
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./"${{ matrix.binary }}" version
+          ./"${{ matrix.binary }}" rules list

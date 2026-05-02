@@ -64,3 +64,13 @@ func TestParseScanOptionsPhaseFiveFlags(t *testing.T) {
 		t.Fatalf("expected github annotation format: %#v", options)
 	}
 }
+
+func TestParseScanOptionsRuleFilter(t *testing.T) {
+	options, err := parseScanOptions([]string{".", "--rule", "HMS0001", "--rule", "HMS0010"})
+	if err != nil {
+		t.Fatalf("parse failed: %v", err)
+	}
+	if len(options.rule) != 2 || options.rule[0] != "HMS0001" || options.rule[1] != "HMS0010" {
+		t.Fatalf("unexpected rule values: %#v", options.rule)
+	}
+}

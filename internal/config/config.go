@@ -12,7 +12,10 @@ type Config struct {
 	Rules               string            `json:"rules,omitempty"`
 	Exclude             []string          `json:"exclude,omitempty"`
 	Include             []string          `json:"include,omitempty"`
+	EnabledRules        []string          `json:"enabledRules,omitempty"`
 	DisabledRules       []string          `json:"disabledRules,omitempty"`
+	Categories          []string          `json:"categories,omitempty"`
+	Tags                []string          `json:"tags,omitempty"`
 	SeverityOverrides   map[string]string `json:"severityOverrides,omitempty"`
 	FailOn              string            `json:"failOn,omitempty"`
 	MinSeverity         string            `json:"minSeverity,omitempty"`
@@ -35,7 +38,10 @@ func Default() Config {
 			".git/**",
 		},
 		Include:             []string{},
+		EnabledRules:        []string{},
 		DisabledRules:       []string{},
+		Categories:          []string{},
+		Tags:                []string{},
 		SeverityOverrides:   map[string]string{},
 		FailOn:              "high",
 		MinSeverity:         "",

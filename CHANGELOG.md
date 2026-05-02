@@ -1,6 +1,38 @@
-﻿# Changelog
+# Changelog
 
-## 0.6.1 - Phase 6
+## 0.7.0 - Unreleased
+
+### Added
+
+- Added `scan --rule RULE_ID` to scan with one or more selected rules.
+- Added `.hermesscan.json` `enabledRules`, `categories`, and `tags` filters.
+- Added `hermesscan rules docs` to generate Markdown rule reference documentation.
+- Added `hermesscan rules categories` and `hermesscan rules tags` inventory commands.
+- Added GitHub Actions rules for self-hosted runner usage and overly broad cache keys.
+
+### Changed
+
+- Refined the PostgreSQL fixed-port rule to focus on exposed/bound port contexts instead of every standalone `5432` token.
+- Lowered the package-install cache rule to `Low` because it is advisory unless paired with shared cache or manual parallelism evidence.
+- Regenerated `docs/rules.md` from the active rule catalog.
+
+## 0.6.1 - Post-release polish
+
+### Fixed
+
+- Updated HermesScan SARIF upload workflow permissions by adding `actions: read`.
+- Updated GitHub SARIF upload action from `github/codeql-action/upload-sarif@v3` to `github/codeql-action/upload-sarif@v4`.
+- Updated GitHub Action default HermesScan CLI version to `0.6.1`.
+
+### Added
+
+- Added public preview and false-positive guidance.
+- Added issue templates for false positives, bugs, and feature requests.
+- Added baseline adoption and generated rule reference documentation.
+- Added v0.7.0 milestone planning notes.
+
+
+## 0.6.0 - Phase 6
 
 - Normalized GitHub Actions annotation paths to forward slashes.
 - Added first-party composite GitHub Action wrapper (`action.yml`).

@@ -1,0 +1,44 @@
+name: Bug report
+about: Report a HermesScan crash, incorrect output, or broken command behavior.
+title: "Bug: <short description>"
+labels: [bug]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: HermesScan version
+      placeholder: 0.7.0
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - Linux
+        - macOS
+        - GitHub Actions
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      render: text
+    validations:
+      required: true

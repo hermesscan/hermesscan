@@ -1,4 +1,4 @@
-﻿package main
+package main
 
 import (
 	"flag"
@@ -16,7 +16,7 @@ import (
 	"github.com/hermesscan/hermesscan/internal/scanner"
 )
 
-var version = "0.6.1"
+var version = "0.7.0"
 
 type repeatFlag []string
 
@@ -52,6 +52,7 @@ type scanOptions struct {
 	include           repeatFlag
 	category          repeatFlag
 	tag               repeatFlag
+	rule              repeatFlag
 }
 
 func main() {
@@ -106,11 +107,14 @@ func runScan(args []string) int {
 	scanOptions := scanner.NewOptionsFromConfigValues(
 		append(cfg.Exclude, options.exclude...),
 		append(cfg.Include, options.include...),
+		append(cfg.EnabledRules, options.rule...),
 		cfg.DisabledRules,
 		cfg.SeverityOverrides,
 		cfg.SuppressionsEnabledValue(),
 	)
+	scanOptions.Categories = append(scanOptions.Categories, cfg.Categories...)
 	scanOptions.Categories = append(scanOptions.Categories, options.category...)
+	scanOptions.Tags = append(scanOptions.Tags, cfg.Tags...)
 	scanOptions.Tags = append(scanOptions.Tags, options.tag...)
 	scanOptions.ChangedOnly = options.changedOnly
 	scanOptions.ChangedBase = options.changedBase
@@ -179,6 +183,7 @@ func parseScanOptions(args []string) (scanOptions, error) {
 	set.Var(&options.include, "include", "glob pattern to include; may be specified multiple times")
 	set.Var(&options.category, "category", "rule category to include; may be specified multiple times")
 	set.Var(&options.tag, "tag", "rule tag to include; may be specified multiple times")
+	set.Var(&options.rule, "rule", "rule ID to include; may be specified multiple times")
 
 	if err := set.Parse(flagArgs); err != nil {
 		return options, err
@@ -249,6 +254,7 @@ func splitPathAndFlags(args []string) (string, []string) {
 		"--include": true, "-include": true,
 		"--category": true, "-category": true,
 		"--tag": true, "-tag": true,
+		"--rule": true, "-rule": true,
 		"--baseline": true, "-baseline": true,
 		"--create-baseline": true, "-create-baseline": true,
 		"--changed-base": true, "-changed-base": true,
@@ -423,7 +429,7 @@ func runInit(args []string) int {
 
 func runRules(args []string) int {
 	if len(args) == 0 {
-		fmt.Fprintf(os.Stderr, "usage: hermesscan rules list|show [id] [--rules rules/hermes.rules.json]\n")
+		fmt.Fprintf(os.Stderr, "usage: hermesscan rules list|show|docs|categories|tags [id] [--rules rules/hermes.rules.json]\n")
 		return 2
 	}
 
@@ -432,6 +438,12 @@ func runRules(args []string) int {
 		return runRulesList(args[1:])
 	case "show":
 		return runRulesShow(args[1:])
+	case "docs":
+		return runRulesDocs(args[1:])
+	case "categories":
+		return runRulesCategories(args[1:])
+	case "tags":
+		return runRulesTags(args[1:])
 	default:
 		fmt.Fprintf(os.Stderr, "unknown rules command: %s\n", args[0])
 		return 2
@@ -501,10 +513,127 @@ func runRulesShow(args []string) int {
 	return 1
 }
 
+func runRulesDocs(args []string) int {
+	set := flag.NewFlagSet("rules docs", flag.ContinueOnError)
+	set.SetOutput(io.Discard)
+	rulePath := set.String("rules", defaultRulesPath(), "path to JSON rule file")
+	outputPath := set.String("output", "", "optional Markdown output file")
+	if err := set.Parse(args); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return 2
+	}
+	if len(set.Args()) > 0 {
+		fmt.Fprintf(os.Stderr, "error: unexpected argument %q\n", set.Args()[0])
+		return 2
+	}
+	loadedRules, err := rules.Load(*rulePath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return 2
+	}
+	sort.Slice(loadedRules, func(i, j int) bool { return loadedRules[i].ID < loadedRules[j].ID })
+	var builder strings.Builder
+	writeRulesMarkdown(&builder, loadedRules)
+	if *outputPath == "" || *outputPath == "-" {
+		fmt.Fprint(os.Stdout, builder.String())
+		return 0
+	}
+	if err := ensureOutputDirectory(*outputPath); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return 2
+	}
+	if err := os.WriteFile(*outputPath, []byte(builder.String()), 0644); err != nil {
+		fmt.Fprintf(os.Stderr, "error: write rules docs %q: %v\n", *outputPath, err)
+		return 2
+	}
+	fmt.Fprintf(os.Stdout, "Wrote %s\n", *outputPath)
+	return 0
+}
+
+func runRulesCategories(args []string) int {
+	return runRulesValueList(args, "categories")
+}
+
+func runRulesTags(args []string) int {
+	return runRulesValueList(args, "tags")
+}
+
+func runRulesValueList(args []string, mode string) int {
+	set := flag.NewFlagSet("rules "+mode, flag.ContinueOnError)
+	set.SetOutput(io.Discard)
+	rulePath := set.String("rules", defaultRulesPath(), "path to JSON rule file")
+	if err := set.Parse(args); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return 2
+	}
+	loadedRules, err := rules.Load(*rulePath)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return 2
+	}
+	values := map[string]bool{}
+	for _, rule := range loadedRules {
+		if mode == "categories" {
+			value := strings.TrimSpace(rule.Category)
+			if value != "" {
+				values[value] = true
+			}
+			continue
+		}
+		for _, tag := range rule.Tags {
+			value := strings.TrimSpace(tag)
+			if value != "" {
+				values[value] = true
+			}
+		}
+	}
+	keys := make([]string, 0, len(values))
+	for value := range values {
+		keys = append(keys, value)
+	}
+	sort.Strings(keys)
+	for _, value := range keys {
+		fmt.Fprintln(os.Stdout, value)
+	}
+	return 0
+}
+
+func writeRulesMarkdown(writer io.Writer, loadedRules []rules.Rule) {
+	fmt.Fprintln(writer, "# HermesScan Rule Reference")
+	fmt.Fprintln(writer)
+	fmt.Fprintf(writer, "Generated for HermesScan %s.\n\n", version)
+	fmt.Fprintln(writer, "| ID | Severity | Category | Name |")
+	fmt.Fprintln(writer, "|---|---|---|---|")
+	for _, rule := range loadedRules {
+		fmt.Fprintf(writer, "| `%s` | %s | %s | %s |\n", rule.ID, rule.Severity, rule.Category, markdownEscape(rule.Name))
+	}
+	fmt.Fprintln(writer)
+	for _, rule := range loadedRules {
+		fmt.Fprintf(writer, "## %s - %s\n\n", rule.ID, rule.Name)
+		fmt.Fprintf(writer, "**Severity:** %s  \n", rule.Severity)
+		fmt.Fprintf(writer, "**Category:** %s  \n", rule.Category)
+		if len(rule.Tags) > 0 {
+			fmt.Fprintf(writer, "**Tags:** `%s`  \n", strings.Join(rule.Tags, "`, `"))
+		}
+		fmt.Fprintf(writer, "**File types:** `%s`  \n\n", strings.Join(rule.FileTypes, "`, `"))
+		fmt.Fprintf(writer, "%s\n\n", rule.Description)
+		fmt.Fprintf(writer, "**Recommendation:** %s\n\n", rule.Recommendation)
+		fmt.Fprintln(writer, "```text")
+		fmt.Fprintln(writer, rule.Pattern)
+		fmt.Fprintln(writer, "```")
+		fmt.Fprintln(writer)
+	}
+}
+
+func markdownEscape(value string) string {
+	value = strings.ReplaceAll(value, "|", "\\|")
+	return value
+}
+
 func printUsage(writer io.Writer) {
 	fmt.Fprintf(writer, "HermesScan %s\n\n", version)
 	fmt.Fprintf(writer, "Usage:\n")
-	fmt.Fprintf(writer, "  hermesscan scan [path] [--config .hermesscan.json] [--rules rules/hermes.rules.json] [--format console|summary|markdown|json|sarif] [--output file] [--fail-on high] [--no-fail] [--baseline file] [--create-baseline file] [--min-severity medium] [--include pattern] [--exclude pattern] [--category name] [--tag name] [--changed-only] [--changed-base ref] [--github-annotations] [--summary] [--quiet] [--no-color]\n")
+	fmt.Fprintf(writer, "  hermesscan scan [path] [--config .hermesscan.json] [--rules rules/hermes.rules.json] [--format console|summary|markdown|json|sarif] [--output file] [--fail-on high] [--no-fail] [--baseline file] [--create-baseline file] [--min-severity medium] [--include pattern] [--exclude pattern] [--category name] [--tag name] [--rule HMS0001] [--changed-only] [--changed-base ref] [--github-annotations] [--summary] [--quiet] [--no-color]\n")
 	fmt.Fprintf(writer, "  hermesscan init [--path .hermesscan.json] [--force]\n")
 	fmt.Fprintf(writer, "  hermesscan rules list [--rules rules/hermes.rules.json]\n")
 	fmt.Fprintf(writer, "  hermesscan rules show RULE_ID [--rules rules/hermes.rules.json]\n")

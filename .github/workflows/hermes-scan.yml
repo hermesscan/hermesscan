@@ -1,4 +1,4 @@
-﻿name: HermesScan
+name: HermesScan
 
 on:
   pull_request:
@@ -31,7 +31,7 @@ jobs:
           go-version: '1.22.x'
 
       - name: Build HermesScan
-        run: go build -ldflags "-X main.version=0.6.1" -o hermesscan ./cmd/hermesscan
+        run: go build -ldflags "-X main.version=0.7.0" -o hermesscan ./cmd/hermesscan
 
       - name: Run HermesScan SARIF report
         run: |

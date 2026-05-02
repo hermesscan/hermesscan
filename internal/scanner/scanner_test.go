@@ -90,7 +90,7 @@ func TestScanCanDisableRule(t *testing.T) {
 		},
 	}
 
-	options := NewOptionsFromConfigValues(nil, nil, []string{"HMS0001"}, nil, true)
+	options := NewOptionsFromConfigValues(nil, nil, nil, []string{"HMS0001"}, nil, true)
 	result, err := ScanWithOptions(root, loaded, options)
 	if err != nil {
 		t.Fatalf("scan failed: %v", err)
@@ -122,7 +122,7 @@ func TestScanCanOverrideSeverity(t *testing.T) {
 		},
 	}
 
-	options := NewOptionsFromConfigValues(nil, nil, nil, map[string]string{"HMS0001": "Low"}, true)
+	options := NewOptionsFromConfigValues(nil, nil, nil, nil, map[string]string{"HMS0001": "Low"}, true)
 	result, err := ScanWithOptions(root, loaded, options)
 	if err != nil {
 		t.Fatalf("scan failed: %v", err)
@@ -157,12 +157,37 @@ func TestScanExcludesCandidates(t *testing.T) {
 		},
 	}
 
-	options := NewOptionsFromConfigValues([]string{filepath.ToSlash(filepath.Join(root, "generated")) + "/**"}, nil, nil, nil, true)
+	options := NewOptionsFromConfigValues([]string{filepath.ToSlash(filepath.Join(root, "generated")) + "/**"}, nil, nil, nil, nil, true)
 	result, err := ScanWithOptions(root, loaded, options)
 	if err != nil {
 		t.Fatalf("scan failed: %v", err)
 	}
 	if result.FilesScanned != 0 {
 		t.Fatalf("files scanned = %d; want 0", result.FilesScanned)
+	}
+}
+
+func TestScanCanEnableSpecificRules(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "ci.sh")
+	if err := os.WriteFile(path, []byte("sleep 30\nnpm ci\n"), 0600); err != nil {
+		t.Fatalf("write fixture: %v", err)
+	}
+
+	loaded := []rules.Rule{
+		{ID: "HMS0001", Name: "Sleep", Severity: "Medium", FileTypes: []string{"bash"}, Pattern: `sleep\s+[0-9]+`},
+		{ID: "HMS0010", Name: "NPM", Severity: "Low", FileTypes: []string{"bash"}, Pattern: `npm\s+ci`},
+	}
+
+	options := NewOptionsFromConfigValues(nil, nil, []string{"HMS0010"}, nil, nil, true)
+	result, err := ScanWithOptions(root, loaded, options)
+	if err != nil {
+		t.Fatalf("scan failed: %v", err)
+	}
+	if len(result.Findings) != 1 || result.Findings[0].RuleID != "HMS0010" {
+		t.Fatalf("expected only HMS0010, got %#v", result.Findings)
+	}
+	if result.RulesLoaded != 1 {
+		t.Fatalf("rules loaded = %d; want 1", result.RulesLoaded)
 	}
 }
