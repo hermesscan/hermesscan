@@ -1,4 +1,4 @@
-# HermesScan
+﻿# HermesScan
 
 [![CI](https://github.com/hermesscan/hermesscan/actions/workflows/ci.yml/badge.svg)](https://github.com/hermesscan/hermesscan/actions/workflows/ci.yml)
 [![HermesScan](https://github.com/hermesscan/hermesscan/actions/workflows/hermes-scan.yml/badge.svg)](https://github.com/hermesscan/hermesscan/actions/workflows/hermes-scan.yml)
@@ -11,7 +11,7 @@ HermesScan is **not** a CI platform. It is a scanner and quality gate for the sc
 
 ## Status
 
-Current version: `0.6.0`
+Current version: `0.6.1`
 
 Phase 6 focuses on GitHub adoption and packaging polish:
 
@@ -28,7 +28,7 @@ Phase 6 focuses on GitHub adoption and packaging polish:
 
 ```powershell
 go test .\...
-go build -ldflags "-X main.version=0.6.0" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.6.1" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe version
 .\hermesscan.exe scan .\examples --summary --no-fail
 ```
@@ -37,7 +37,7 @@ go build -ldflags "-X main.version=0.6.0" -o .\hermesscan.exe .\cmd\hermesscan
 
 ```bash
 go test ./...
-go build -ldflags "-X main.version=0.6.0" -o ./hermesscan ./cmd/hermesscan
+go build -ldflags "-X main.version=0.6.1" -o ./hermesscan ./cmd/hermesscan
 ./hermesscan version
 ./hermesscan scan ./examples --summary --no-fail
 ```
@@ -158,11 +158,11 @@ Scan only files changed from a base ref:
 
 See [docs/github-action.md](docs/github-action.md).
 
-Basic usage. The action tag and downloaded CLI version are both `0.6.0` by default:
+Basic usage. The action tag and downloaded CLI version are both `0.6.1` by default:
 
 ```yaml
 - name: Run HermesScan
-  uses: hermesscan/hermesscan@v0.6.0
+  uses: hermesscan/hermesscan@v0.6.1
   with:
     path: .
     format: summary
@@ -173,7 +173,7 @@ SARIF upload:
 
 ```yaml
 - name: Generate HermesScan SARIF
-  uses: hermesscan/hermesscan@v0.6.0
+  uses: hermesscan/hermesscan@v0.6.1
   with:
     path: .
     format: sarif
@@ -281,7 +281,7 @@ Suppress a rule for the whole file:
 PowerShell 5.1-compatible build script:
 
 ```powershell
-.\scripts\Build-HermesScan.ps1 -AllTargets -Version 0.6.0
+.\scripts\Build-HermesScan.ps1 -AllTargets -Version 0.6.1
 ```
 
 Outputs are written to `dist/` with `.sha256` checksum files.

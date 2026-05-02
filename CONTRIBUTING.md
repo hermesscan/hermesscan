@@ -1,4 +1,4 @@
-# Contributing to HermesScan
+﻿# Contributing to HermesScan
 
 Thanks for helping improve HermesScan.
 
@@ -15,7 +15,7 @@ Run these before opening a pull request:
 ```bash
 go test ./...
 go vet ./...
-go build -ldflags "-X main.version=0.6.0" -o hermesscan ./cmd/hermesscan
+go build -ldflags "-X main.version=0.6.1" -o hermesscan ./cmd/hermesscan
 ./hermesscan scan ./examples --summary --no-fail
 ```
 
@@ -24,7 +24,7 @@ Windows PowerShell:
 ```powershell
 go test .\...
 go vet .\...
-go build -ldflags "-X main.version=0.6.0" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.6.1" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe scan .\examples --summary --no-fail
 ```
 

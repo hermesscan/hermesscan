@@ -1,6 +1,6 @@
-# Changelog
+﻿# Changelog
 
-## 0.6.0 - Phase 6
+## 0.6.1 - Phase 6
 
 - Normalized GitHub Actions annotation paths to forward slashes.
 - Added first-party composite GitHub Action wrapper (`action.yml`).

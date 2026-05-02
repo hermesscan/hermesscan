@@ -1,4 +1,4 @@
-# GitHub Action usage
+﻿# GitHub Action usage
 
 HermesScan includes a composite GitHub Action wrapper in `action.yml`.
 
@@ -8,7 +8,7 @@ HermesScan includes a composite GitHub Action wrapper in `action.yml`.
 | Input | Default | Description |
 |---|---:|---|
 | `path` | `.` | Path to scan. |
-| `version` | `0.6.0` | HermesScan release binary version to download. Use `latest` only when you intentionally want the newest release binary. |
+| `version` | `0.6.1` | HermesScan release binary version to download. Use `latest` only when you intentionally want the newest release binary. |
 | `repository` | `hermesscan/hermesscan` | Repository that hosts HermesScan release binaries. |
 | `format` | `summary` | Report format: `console`, `summary`, `markdown`, `json`, `sarif`, or `github`. |
 | `output` | empty | Optional report output file. |
@@ -23,7 +23,7 @@ HermesScan includes a composite GitHub Action wrapper in `action.yml`.
 | `github-annotations` | `false` | Emit GitHub Actions annotations. |
 | `no-fail` | `false` | Always return success even when findings are detected. |
 
-The action wrapper is pinned by `uses: hermesscan/hermesscan@v0.6.0`, and the downloaded CLI defaults to version `0.6.0`. Override `version` only when you intentionally want a different release binary.
+The action wrapper is pinned by `uses: hermesscan/hermesscan@v0.6.1`, and the downloaded CLI defaults to version `0.6.1`. Override `version` only when you intentionally want a different release binary.
 
 ## Basic pull-request gate
 
@@ -48,7 +48,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run HermesScan
-        uses: hermesscan/hermesscan@v0.6.0
+        uses: hermesscan/hermesscan@v0.6.1
         with:
           path: .
           format: summary
@@ -59,7 +59,7 @@ jobs:
 
 ```yaml
 - name: Run HermesScan annotations
-  uses: hermesscan/hermesscan@v0.6.0
+  uses: hermesscan/hermesscan@v0.6.1
   with:
     path: .
     github-annotations: 'true'
@@ -97,7 +97,7 @@ jobs:
           fetch-depth: 0
 
       - name: Generate HermesScan SARIF
-        uses: hermesscan/hermesscan@v0.6.0
+        uses: hermesscan/hermesscan@v0.6.1
         with:
           path: .
           format: sarif
@@ -114,7 +114,7 @@ jobs:
 
 ```yaml
 - name: Run HermesScan with baseline
-  uses: hermesscan/hermesscan@v0.6.0
+  uses: hermesscan/hermesscan@v0.6.1
   with:
     path: .
     baseline: .hermesscan-baseline.json
@@ -126,7 +126,7 @@ jobs:
 For production use, pin the action to a release tag or commit SHA.
 
 ```yaml
-uses: hermesscan/hermesscan@v0.6.0
+uses: hermesscan/hermesscan@v0.6.1
 ```
 
 Avoid floating references such as `@main` for required gates.

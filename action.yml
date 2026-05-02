@@ -1,4 +1,4 @@
-name: HermesScan
+﻿name: HermesScan
 description: Scan build scripts, CI scripts, and workflow files for accidental orchestration and shared-runner hazards.
 author: HermesScan
 
@@ -8,9 +8,9 @@ inputs:
     required: false
     default: .
   version:
-    description: HermesScan release version to download, such as 0.6.0. Use latest to download the latest release.
+    description: HermesScan release version to download, such as 0.6.1. Use latest to download the latest release.
     required: false
-    default: '0.6.0'
+    default: '0.6.1'
   repository:
     description: GitHub repository that hosts HermesScan release binaries.
     required: false

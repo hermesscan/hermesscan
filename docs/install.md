@@ -1,4 +1,4 @@
-# Installing HermesScan
+﻿# Installing HermesScan
 
 HermesScan is distributed as a native binary for Windows, Linux, and macOS.
 
@@ -7,7 +7,7 @@ HermesScan is distributed as a native binary for Windows, Linux, and macOS.
 Download the Windows release binary from GitHub Releases, then place it somewhere on your user PATH.
 
 ```powershell
-$Version = '0.6.0'
+$Version = '0.6.1'
 $Uri = "https://github.com/hermesscan/hermesscan/releases/download/v$($Version)/hermesscan-windows-amd64.exe"
 New-Item -Path "$env:USERPROFILE\bin" -ItemType Directory -Force | Out-Null
 Invoke-WebRequest -Uri $Uri -OutFile "$env:USERPROFILE\bin\hermesscan.exe"
@@ -45,7 +45,7 @@ When running from the current directory without PATH installation, PowerShell re
 ## Linux
 
 ```bash
-VERSION=0.6.0
+VERSION=0.6.1
 curl -fsSL -o hermesscan-linux-amd64 \
   "https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}/hermesscan-linux-amd64"
 chmod +x ./hermesscan-linux-amd64
@@ -58,7 +58,7 @@ hermesscan version
 Apple Silicon:
 
 ```bash
-VERSION=0.6.0
+VERSION=0.6.1
 curl -fsSL -o hermesscan-darwin-arm64 \
   "https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}/hermesscan-darwin-arm64"
 chmod +x ./hermesscan-darwin-arm64
@@ -74,7 +74,7 @@ Use `hermesscan-darwin-amd64` for Intel Macs and `hermesscan-darwin-arm64` for A
 git clone https://github.com/hermesscan/hermesscan.git
 cd hermesscan
 go test ./...
-go build -ldflags "-X main.version=0.6.0" -o hermesscan ./cmd/hermesscan
+go build -ldflags "-X main.version=0.6.1" -o hermesscan ./cmd/hermesscan
 ./hermesscan version
 ```
 
@@ -82,6 +82,6 @@ Windows PowerShell:
 
 ```powershell
 go test .\...
-go build -ldflags "-X main.version=0.6.0" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.6.1" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe version
 ```
