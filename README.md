@@ -22,6 +22,7 @@ Version 0.8.0 focuses on rule precision and packaging polish:
 - rule catalog validation with `rules validate`
 - sync checks between embedded and repository rule catalogs
 - default-rule precision tests for common false-positive cases
+- Docker Compose project-name context handling
 - safer rule authoring and release validation workflows
 
 ## Quick start from source

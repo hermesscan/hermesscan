@@ -506,6 +506,13 @@ func runRulesShow(args []string) int {
 			}
 			fmt.Fprintf(os.Stdout, "File types: %s\n", strings.Join(rule.FileTypes, ", "))
 			fmt.Fprintf(os.Stdout, "Pattern: %s\n", rule.Pattern)
+			if rule.ExcludePattern != "" {
+				fmt.Fprintf(os.Stdout, "Exclude pattern: %s\n", rule.ExcludePattern)
+			}
+			if rule.ContextBeforePattern != "" {
+				fmt.Fprintf(os.Stdout, "Context before pattern: %s\n", rule.ContextBeforePattern)
+				fmt.Fprintf(os.Stdout, "Context before lines: %d\n", rule.ContextBeforeLines)
+			}
 			fmt.Fprintf(os.Stdout, "Description: %s\n", rule.Description)
 			fmt.Fprintf(os.Stdout, "Recommendation: %s\n", rule.Recommendation)
 			return 0
@@ -653,6 +660,21 @@ func writeRulesMarkdown(writer io.Writer, loadedRules []rules.Rule) {
 		fmt.Fprintln(writer, rule.Pattern)
 		fmt.Fprintln(writer, "```")
 		fmt.Fprintln(writer)
+		if rule.ExcludePattern != "" {
+			fmt.Fprintln(writer, "**Exclude pattern:**")
+			fmt.Fprintln(writer)
+			fmt.Fprintln(writer, "```text")
+			fmt.Fprintln(writer, rule.ExcludePattern)
+			fmt.Fprintln(writer, "```")
+			fmt.Fprintln(writer)
+		}
+		if rule.ContextBeforePattern != "" {
+			fmt.Fprintf(writer, "**Context before pattern:** within the previous %d line(s)\n\n", rule.ContextBeforeLines)
+			fmt.Fprintln(writer, "```text")
+			fmt.Fprintln(writer, rule.ContextBeforePattern)
+			fmt.Fprintln(writer, "```")
+			fmt.Fprintln(writer)
+		}
 	}
 }
 

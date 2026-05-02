@@ -44,6 +44,28 @@ func TestDefaultRulePrecisionBroadCacheAllowsLockfileHash(t *testing.T) {
 	}
 }
 
+func TestDefaultRulePrecisionDockerComposeProjectName(t *testing.T) {
+	risk := scanDefaultRuleFixture(t, "ci.sh", "docker compose up -d\n", "HMS0007")
+	if len(risk.Findings) != 1 {
+		t.Fatalf("expected one compose project-name finding, got %#v", risk.Findings)
+	}
+
+	projectFlag := scanDefaultRuleFixture(t, "ci.sh", "docker compose -p \"$CI_RUN_ID\" up -d\n", "HMS0007")
+	if len(projectFlag.Findings) != 0 {
+		t.Fatalf("expected no findings with compose project flag, got %#v", projectFlag.Findings)
+	}
+
+	inlineProjectName := scanDefaultRuleFixture(t, "ci.sh", "COMPOSE_PROJECT_NAME=\"$CI_RUN_ID\" docker compose up -d\n", "HMS0007")
+	if len(inlineProjectName.Findings) != 0 {
+		t.Fatalf("expected no findings with inline COMPOSE_PROJECT_NAME, got %#v", inlineProjectName.Findings)
+	}
+
+	nearbyProjectName := scanDefaultRuleFixture(t, "ci.sh", "export COMPOSE_PROJECT_NAME=\"$CI_RUN_ID\"\ndocker compose up -d\n", "HMS0007")
+	if len(nearbyProjectName.Findings) != 0 {
+		t.Fatalf("expected no findings with nearby COMPOSE_PROJECT_NAME, got %#v", nearbyProjectName.Findings)
+	}
+}
+
 func scanDefaultRuleFixture(t *testing.T, filename string, content string, ruleID string) Result {
 	t.Helper()
 

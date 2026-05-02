@@ -14,8 +14,10 @@ import (
 )
 
 type compiledRule struct {
-	rule  rules.Rule
-	regex *regexp.Regexp
+	rule               rules.Rule
+	regex              *regexp.Regexp
+	excludeRegex       *regexp.Regexp
+	contextBeforeRegex *regexp.Regexp
 }
 
 // Scan applies rules to candidate files under root using default options.
@@ -86,7 +88,21 @@ func compileRules(loadedRules []rules.Rule, options Options) ([]compiledRule, er
 		if err != nil {
 			return nil, fmt.Errorf("compile rule %q: %w", rule.ID, err)
 		}
-		compiled = append(compiled, compiledRule{rule: rule, regex: re})
+		var excludeRe *regexp.Regexp
+		if strings.TrimSpace(rule.ExcludePattern) != "" {
+			excludeRe, err = regexp.Compile(rule.ExcludePattern)
+			if err != nil {
+				return nil, fmt.Errorf("compile rule %q exclude pattern: %w", rule.ID, err)
+			}
+		}
+		var contextBeforeRe *regexp.Regexp
+		if strings.TrimSpace(rule.ContextBeforePattern) != "" {
+			contextBeforeRe, err = regexp.Compile(rule.ContextBeforePattern)
+			if err != nil {
+				return nil, fmt.Errorf("compile rule %q context-before pattern: %w", rule.ID, err)
+			}
+		}
+		compiled = append(compiled, compiledRule{rule: rule, regex: re, excludeRegex: excludeRe, contextBeforeRegex: contextBeforeRe})
 	}
 	return compiled, nil
 }
@@ -104,6 +120,7 @@ func scanFile(candidate files.Candidate, compiled []compiledRule, options Option
 	lineNumber := 0
 	fileSuppressions := []string{}
 	nextLineSuppressions := make(map[int][]string)
+	previousLines := []string{}
 
 	for scanner.Scan() {
 		lineNumber++
@@ -133,6 +150,10 @@ func scanFile(candidate files.Candidate, compiled []compiledRule, options Option
 				continue
 			}
 
+			if hasRuleExclusionContext(item, line, previousLines) {
+				continue
+			}
+
 			if options.SuppressionsEnabled && isSuppressed(item.rule.ID, fileSuppressions, nextLineSuppressions[lineNumber], lineSuppressions) {
 				suppressedCount++
 				continue
@@ -156,6 +177,8 @@ func scanFile(candidate files.Candidate, compiled []compiledRule, options Option
 			finding.Fingerprint = Fingerprint(finding)
 			findings = append(findings, finding)
 		}
+
+		previousLines = append(previousLines, line)
 	}
 
 	if err := scanner.Err(); err != nil {
@@ -163,6 +186,29 @@ func scanFile(candidate files.Candidate, compiled []compiledRule, options Option
 	}
 
 	return findings, suppressedCount, nil
+}
+
+func hasRuleExclusionContext(item compiledRule, line string, previousLines []string) bool {
+	if item.excludeRegex != nil && item.excludeRegex.MatchString(line) {
+		return true
+	}
+	if item.contextBeforeRegex == nil {
+		return false
+	}
+	window := item.rule.ContextBeforeLines
+	if window < 1 {
+		window = 1
+	}
+	start := len(previousLines) - window
+	if start < 0 {
+		start = 0
+	}
+	for _, previousLine := range previousLines[start:] {
+		if item.contextBeforeRegex.MatchString(previousLine) {
+			return true
+		}
+	}
+	return false
 }
 
 func isSuppressed(ruleID string, groups ...[]string) bool {

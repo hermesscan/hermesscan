@@ -115,9 +115,12 @@
       "yaml",
       "makefile"
     ],
-    "pattern": "(?i)docker\\s+compose\\s+up|docker-compose\\s+up",
-    "description": "Docker Compose can collide across concurrent jobs when project names, networks, volumes, or ports are shared.",
-    "recommendation": "Set a unique COMPOSE_PROJECT_NAME per CI job and ensure compose down runs during cleanup.",
+    "pattern": "(?i)\\bdocker\\s+compose\\s+up\\b|\\bdocker-compose\\s+up\\b",
+    "excludePattern": "(?i)\\b(COMPOSE_PROJECT_NAME\\s*=|(?:-p|--project-name)(?:\\s+|=))",
+    "contextBeforePattern": "(?i)\\bCOMPOSE_PROJECT_NAME\\b\\s*[:=]",
+    "contextBeforeLines": 3,
+    "description": "Docker Compose startup without an explicit project name can collide across concurrent jobs when networks, volumes, or ports are shared.",
+    "recommendation": "Set a unique COMPOSE_PROJECT_NAME per CI job or pass -p/--project-name, and ensure compose down runs during cleanup.",
     "category": "isolation",
     "tags": [
       "docker",

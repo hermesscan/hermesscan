@@ -118,12 +118,24 @@ Started processes can leak across build steps if they are not tracked and cleane
 **Tags:** `docker`, `compose`  
 **File types:** `bash`, `powershell`, `yaml`, `makefile`  
 
-Docker Compose can collide across concurrent jobs when project names, networks, volumes, or ports are shared.
+Docker Compose startup without an explicit project name can collide across concurrent jobs when networks, volumes, or ports are shared.
 
-**Recommendation:** Set a unique COMPOSE_PROJECT_NAME per CI job and ensure compose down runs during cleanup.
+**Recommendation:** Set a unique COMPOSE_PROJECT_NAME per CI job or pass -p/--project-name, and ensure compose down runs during cleanup.
 
 ```text
-(?i)docker\s+compose\s+up|docker-compose\s+up
+(?i)\bdocker\s+compose\s+up\b|\bdocker-compose\s+up\b
+```
+
+**Exclude pattern:**
+
+```text
+(?i)\b(COMPOSE_PROJECT_NAME\s*=|(?:-p|--project-name)(?:\s+|=))
+```
+
+**Context before pattern:** within the previous 3 line(s)
+
+```text
+(?i)\bCOMPOSE_PROJECT_NAME\b\s*[:=]
 ```
 
 ## HMS0008 - Shared temp path

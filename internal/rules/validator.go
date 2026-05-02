@@ -55,6 +55,19 @@ func ValidateCatalog(loaded []Rule) error {
 		if _, err := regexp.Compile(rule.Pattern); err != nil {
 			return fmt.Errorf("%s has invalid pattern: %w", label, err)
 		}
+		if strings.TrimSpace(rule.ExcludePattern) != "" {
+			if _, err := regexp.Compile(rule.ExcludePattern); err != nil {
+				return fmt.Errorf("%s has invalid excludePattern: %w", label, err)
+			}
+		}
+		if strings.TrimSpace(rule.ContextBeforePattern) != "" {
+			if _, err := regexp.Compile(rule.ContextBeforePattern); err != nil {
+				return fmt.Errorf("%s has invalid contextBeforePattern: %w", label, err)
+			}
+			if rule.ContextBeforeLines < 1 {
+				return fmt.Errorf("%s contextBeforeLines must be at least 1 when contextBeforePattern is set", label)
+			}
+		}
 		if strings.TrimSpace(rule.Description) == "" {
 			return fmt.Errorf("%s is missing description", label)
 		}

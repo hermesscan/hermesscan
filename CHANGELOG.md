@@ -9,6 +9,10 @@
 - Added tests that keep the repository rule catalog in sync with the embedded default catalog.
 - Added default-rule precision tests for common false-positive cases.
 
+### Changed
+
+- Refined the Docker Compose startup rule to ignore commands with explicit project-name context.
+
 ## 0.7.0 - 2026-05-02
 
 ### Added
