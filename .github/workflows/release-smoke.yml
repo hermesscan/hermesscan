@@ -50,6 +50,8 @@ jobs:
             'hermesscan-darwin-amd64',
             'hermesscan-darwin-arm64',
             'hermesscan.spdx.json',
+            'hermesscan.sarif',
+            'hermesscan.md',
             'checksums.txt'
           )
 
@@ -71,7 +73,9 @@ jobs:
             'hermesscan-linux-arm64',
             'hermesscan-darwin-amd64',
             'hermesscan-darwin-arm64',
-            'hermesscan.spdx.json'
+            'hermesscan.spdx.json',
+            'hermesscan.sarif',
+            'hermesscan.md'
           )
 
           $checksumsPath = Join-Path 'dist' 'checksums.txt'

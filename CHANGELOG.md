@@ -7,7 +7,8 @@
 - Added file-level rule support with `requiredFilePattern` for conservative absence checks.
 - Added `HMS0017` to flag release workflows that publish release assets without an SBOM signal.
 - Added SBOM generation to the release workflow and included the SBOM in release checksum and smoke-test verification.
-- Added workflow contract tests for SBOM release assets and checksum coverage.
+- Added HermesScan SARIF and Markdown release evidence to release assets, checksum coverage, and release smoke verification.
+- Added workflow contract tests for SBOM/report release assets and checksum coverage.
 - Added a Scoop packaging plan covering manifest shape, release assets, checksum source, and update workflow.
 - Added a local Scoop manifest prototype and manifest refresh helper.
 - Documented Scoop download/hash validation commands for the prototype manifest.

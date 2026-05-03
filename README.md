@@ -364,7 +364,7 @@ go build -ldflags "-X main.version=0.9.0" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe scan . --summary --exclude "examples/**" --no-fail
 ```
 
-After publishing a release, run the `Release smoke test` workflow for the new version. It verifies all published binary assets, validates `checksums.txt`, and runs native CLI smoke checks on each target.
+After publishing a release, run the `Release smoke test` workflow for the new version. It verifies all published binary, SBOM, and scan-report assets, validates `checksums.txt`, and runs native CLI smoke checks on each target.
 
 ## Build release binaries
 

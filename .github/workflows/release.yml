@@ -14,6 +14,7 @@ on:
 permissions:
   contents: write
   actions: read
+  security-events: write
 
 jobs:
   build-release:
@@ -70,6 +71,27 @@ jobs:
           ./dist/hermesscan-linux-amd64 rules validate
           ./dist/hermesscan-linux-amd64 scan ./examples --summary --no-fail
 
+      - name: Generate HermesScan SARIF report
+        run: |
+          ./dist/hermesscan-linux-amd64 scan . \
+            --format sarif \
+            --output dist/hermesscan.sarif \
+            --exclude 'dist/**' \
+            --no-fail
+
+      - name: Upload HermesScan SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: dist/hermesscan.sarif
+
+      - name: Generate HermesScan Markdown report
+        run: |
+          ./dist/hermesscan-linux-amd64 scan . \
+            --format markdown \
+            --output dist/hermesscan.md \
+            --exclude 'dist/**' \
+            --no-fail
+
       - name: Generate source SBOM
         uses: anchore/sbom-action@v0
         with:
@@ -84,13 +106,16 @@ jobs:
         run: |
           set -euo pipefail
           cd dist
-          sha256sum hermesscan-* hermesscan.spdx.json > checksums.txt
+          sha256sum hermesscan-* hermesscan.spdx.json hermesscan.sarif hermesscan.md > checksums.txt
 
-      - name: Upload build artifacts
+      - name: Upload release evidence
         uses: actions/upload-artifact@v4
         with:
-          name: hermesscan-release-binaries
+          name: hermesscan-release-evidence
           path: dist/*
+
+      - name: Gate release with HermesScan
+        run: ./dist/hermesscan-linux-amd64 scan . --summary --fail-on high --exclude 'examples/**' --exclude 'dist/**'
 
       - name: Create GitHub release
         if: startsWith(github.ref, 'refs/tags/')
