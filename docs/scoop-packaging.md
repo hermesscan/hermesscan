@@ -90,7 +90,21 @@ scoop download .\packaging\scoop\hermesscan.json --force --no-update-scoop --arc
 scoop download .\packaging\scoop\hermesscan.json --force --no-update-scoop --arch arm64
 ```
 
-Do not publish to a public bucket until the manifest has been tested against at least one real release.
+Validate install, shim creation, and runtime behavior:
+
+```powershell
+scoop install .\packaging\scoop\hermesscan.json
+Get-Command hermesscan
+hermesscan version
+```
+
+Expected version output for the prototype manifest:
+
+```text
+HermesScan 0.8.0
+```
+
+The local prototype has been validated against the published `v0.8.0` release with `scoop download` for `64bit` and `arm64`, plus `scoop install` on `64bit`.
 
 ## Open decisions
 

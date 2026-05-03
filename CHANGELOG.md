@@ -11,6 +11,7 @@
 - Added a Scoop packaging plan covering manifest shape, release assets, checksum source, and update workflow.
 - Added a local Scoop manifest prototype and manifest refresh helper.
 - Documented Scoop download/hash validation commands for the prototype manifest.
+- Documented successful local Scoop install, shim, and runtime validation for the prototype manifest.
 
 ## 0.8.0 - 2026-05-03
 
