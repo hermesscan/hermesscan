@@ -357,6 +357,8 @@ go build -ldflags "-X main.version=0.8.0" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe scan . --summary --exclude "examples/**" --no-fail
 ```
 
+After publishing a release, run the `Release smoke test` workflow for the new version. It verifies all published binary assets, validates `checksums.txt`, and runs native CLI smoke checks on each target.
+
 ## Build release binaries
 
 PowerShell 5.1-compatible build script:

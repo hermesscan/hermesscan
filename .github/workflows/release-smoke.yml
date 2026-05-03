@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to smoke test, for example 0.7.0'
+        description: 'Version to smoke test, for example 0.8.0'
         required: true
-        default: '0.7.0'
+        default: '0.8.0'
   release:
     types:
       - published
@@ -15,8 +15,97 @@ permissions:
   contents: read
 
 jobs:
+  verify-assets:
+    name: Verify release assets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Determine version
+        id: version
+        shell: pwsh
+        run: |
+          $version = '${{ inputs.version }}'
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            $version = '${{ github.event.release.tag_name }}'
+          }
+          $version = $version.Trim()
+          if ($version.StartsWith('v')) {
+            $version = $version.Substring(1)
+          }
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            throw 'No release version was provided.'
+          }
+          "version=$version" >> $env:GITHUB_OUTPUT
+
+      - name: Download release assets
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $version = '${{ steps.version.outputs.version }}'
+          $assets = @(
+            'hermesscan-windows-amd64.exe',
+            'hermesscan-windows-arm64.exe',
+            'hermesscan-linux-amd64',
+            'hermesscan-linux-arm64',
+            'hermesscan-darwin-amd64',
+            'hermesscan-darwin-arm64',
+            'checksums.txt'
+          )
+
+          New-Item -Path dist -ItemType Directory -Force | Out-Null
+          foreach ($asset in $assets) {
+            $uri = "https://github.com/hermesscan/hermesscan/releases/download/v$version/$asset"
+            Write-Host "Downloading $uri"
+            Invoke-WebRequest -Uri $uri -OutFile (Join-Path 'dist' $asset)
+          }
+
+      - name: Verify release checksums
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $expectedAssets = @(
+            'hermesscan-windows-amd64.exe',
+            'hermesscan-windows-arm64.exe',
+            'hermesscan-linux-amd64',
+            'hermesscan-linux-arm64',
+            'hermesscan-darwin-amd64',
+            'hermesscan-darwin-arm64'
+          )
+
+          $checksumsPath = Join-Path 'dist' 'checksums.txt'
+          $checksums = @{}
+          foreach ($line in Get-Content -LiteralPath $checksumsPath) {
+            if ([string]::IsNullOrWhiteSpace($line)) {
+              continue
+            }
+
+            $parts = $line.Trim() -split '\s+', 2
+            if ($parts.Count -ne 2) {
+              throw "Invalid checksum line: $line"
+            }
+
+            $fileName = $parts[1].TrimStart('*')
+            $checksums[$fileName] = $parts[0].ToLowerInvariant()
+          }
+
+          foreach ($asset in $expectedAssets) {
+            $assetPath = Join-Path 'dist' $asset
+            if (-not (Test-Path -LiteralPath $assetPath)) {
+              throw "Missing release asset: $asset"
+            }
+            if (-not $checksums.ContainsKey($asset)) {
+              throw "Missing checksum entry for release asset: $asset"
+            }
+
+            $actual = (Get-FileHash -LiteralPath $assetPath -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($actual -ne $checksums[$asset]) {
+              throw "Checksum mismatch for $asset. Expected $($checksums[$asset]), got $actual."
+            }
+          }
+
   smoke:
-    name: Smoke test release binary
+    name: Smoke test ${{ matrix.asset }}
+    needs: verify-assets
     strategy:
       fail-fast: false
       matrix:
@@ -24,39 +113,68 @@ jobs:
           - os: ubuntu-latest
             asset: hermesscan-linux-amd64
             binary: hermesscan
+          - os: ubuntu-24.04-arm
+            asset: hermesscan-linux-arm64
+            binary: hermesscan
           - os: windows-latest
             asset: hermesscan-windows-amd64.exe
             binary: hermesscan.exe
+          - os: windows-11-arm
+            asset: hermesscan-windows-arm64.exe
+            binary: hermesscan.exe
+          - os: macos-15-intel
+            asset: hermesscan-darwin-amd64
+            binary: hermesscan
           - os: macos-latest
             asset: hermesscan-darwin-arm64
             binary: hermesscan
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
       - name: Determine version
         id: version
-        shell: bash
+        shell: pwsh
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            VERSION="${{ github.event.inputs.version }}"
-          else
-            VERSION="${GITHUB_REF_NAME#v}"
-          fi
-          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          $version = '${{ inputs.version }}'
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            $version = '${{ github.event.release.tag_name }}'
+          }
+          $version = $version.Trim()
+          if ($version.StartsWith('v')) {
+            $version = $version.Substring(1)
+          }
+          if ([string]::IsNullOrWhiteSpace($version)) {
+            throw 'No release version was provided.'
+          }
+          "version=$version" >> $env:GITHUB_OUTPUT
 
       - name: Download release binary
-        shell: bash
+        shell: pwsh
         run: |
-          set -euo pipefail
-          VERSION="${{ steps.version.outputs.version }}"
-          URL="https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}/${{ matrix.asset }}"
-          echo "Downloading $URL"
-          curl -fsSL "$URL" -o "${{ matrix.binary }}"
-          chmod +x "${{ matrix.binary }}"
+          $ErrorActionPreference = 'Stop'
+          $version = '${{ steps.version.outputs.version }}'
+          $uri = "https://github.com/hermesscan/hermesscan/releases/download/v$version/${{ matrix.asset }}"
+          Write-Host "Downloading $uri"
+          Invoke-WebRequest -Uri $uri -OutFile '${{ matrix.binary }}'
+          if (-not $IsWindows) {
+            chmod +x '${{ matrix.binary }}'
+          }
 
-      - name: Verify version
-        shell: bash
+      - name: Smoke test release binary
+        shell: pwsh
         run: |
-          set -euo pipefail
-          ./"${{ matrix.binary }}" version
-          ./"${{ matrix.binary }}" rules list
+          $ErrorActionPreference = 'Stop'
+          $version = '${{ steps.version.outputs.version }}'
+          $binary = Join-Path (Get-Location) '${{ matrix.binary }}'
+
+          $versionOutput = & $binary version
+          $expectedVersion = "HermesScan $version"
+          if (($versionOutput -join "`n") -notmatch [regex]::Escape($expectedVersion)) {
+            throw "Unexpected version output. Expected '$expectedVersion', got '$versionOutput'."
+          }
+
+          & $binary rules validate
+          & $binary scan (Join-Path (Get-Location) 'examples') --summary --no-fail

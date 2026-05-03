@@ -69,6 +69,7 @@ jobs:
         run: |
           ./dist/hermesscan-linux-amd64 version
           ./dist/hermesscan-linux-amd64 rules validate
+          ./dist/hermesscan-linux-amd64 scan ./examples --summary --no-fail
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4

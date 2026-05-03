@@ -10,6 +10,7 @@
 - Added default-rule precision tests for common false-positive cases.
 - Added a rule authoring guide for rule fields, contextual precision patterns, and validation workflow.
 - Added a GitHub Action workflow example that combines SARIF upload, a report artifact, and a separate summary gate.
+- Expanded release smoke testing to verify every published binary asset, checksum entries, and native CLI execution.
 
 ### Changed
 
