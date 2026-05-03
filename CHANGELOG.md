@@ -13,6 +13,7 @@
 - Documented Scoop download/hash validation commands for the prototype manifest.
 - Documented successful local Scoop install, shim, and runtime validation for the prototype manifest.
 - Documented raw GitHub Scoop manifest installation before publishing a bucket.
+- Added a complete release assurance workflow example that publishes binaries, checksums, SBOMs, and HermesScan reports together.
 
 ## 0.8.0 - 2026-05-03
 
