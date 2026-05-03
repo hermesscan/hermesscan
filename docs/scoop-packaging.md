@@ -2,7 +2,7 @@
 
 HermesScan should support Scoop after the release asset contract is stable.
 
-This plan is for a future Scoop manifest. It does not publish a bucket yet.
+This plan covers the local prototype manifest in `packaging/scoop/hermesscan.json`. It does not publish a bucket yet.
 
 ## Package shape
 
@@ -19,7 +19,7 @@ Do not introduce a Windows zip archive only for Scoop unless Scoop requires it. 
 
 ## Manifest fields
 
-Initial manifest shape:
+Prototype manifest shape:
 
 ```json
 {
@@ -54,7 +54,7 @@ Initial manifest shape:
 }
 ```
 
-Confirm the final `autoupdate` hash behavior against Scoop tooling before publishing. If Scoop cannot derive hashes from `checksums.txt`, the update script should download `checksums.txt`, extract the matching Windows hashes, and update the manifest explicitly.
+The local `scripts/Update-ScoopManifest.ps1` helper downloads `checksums.txt`, extracts the matching Windows hashes, and updates the manifest explicitly. Confirm final `autoupdate` hash behavior against Scoop tooling before publishing to a bucket.
 
 ## Release requirements
 
@@ -77,7 +77,20 @@ The update workflow should:
 5. Run Scoop manifest validation.
 6. Smoke-test `scoop install` from the local manifest when Scoop is available.
 
-Keep the first implementation manual or semi-automated. Do not publish to a public bucket until the manifest has been tested against at least one real release.
+Refresh the local prototype manifest:
+
+```powershell
+.\scripts\Update-ScoopManifest.ps1 -Version 0.8.0
+```
+
+Validate downloads and hashes without installing:
+
+```powershell
+scoop download .\packaging\scoop\hermesscan.json --force --no-update-scoop --arch 64bit
+scoop download .\packaging\scoop\hermesscan.json --force --no-update-scoop --arch arm64
+```
+
+Do not publish to a public bucket until the manifest has been tested against at least one real release.
 
 ## Open decisions
 

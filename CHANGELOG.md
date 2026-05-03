@@ -9,6 +9,8 @@
 - Added SBOM generation to the release workflow and included the SBOM in release checksum and smoke-test verification.
 - Added workflow contract tests for SBOM release assets and checksum coverage.
 - Added a Scoop packaging plan covering manifest shape, release assets, checksum source, and update workflow.
+- Added a local Scoop manifest prototype and manifest refresh helper.
+- Documented Scoop download/hash validation commands for the prototype manifest.
 
 ## 0.8.0 - 2026-05-03
 
