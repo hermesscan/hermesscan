@@ -284,5 +284,23 @@
     "excludePattern": "(?i)hashFiles\\s*\\(|package-lock\\.json|npm-shrinkwrap\\.json|pnpm-lock\\.yaml|yarn\\.lock|go\\.sum|Cargo\\.lock|requirements(?:\\.txt)?|poetry\\.lock|Pipfile\\.lock|composer\\.lock|Gemfile\\.lock|github\\.(?:ref|sha)|matrix\\.",
     "description": "Broad cache keys based mostly on runner OS can cause unrelated branches or dependency states to reuse the same writable cache namespace.",
     "recommendation": "Include dependency lockfile hashes, matrix dimensions, or source revision inputs in cache keys, such as hashFiles('**/package-lock.json')."
+  },
+  {
+    "id": "HMS0017",
+    "name": "Release workflow without SBOM artifact",
+    "severity": "Low",
+    "category": "supply-chain",
+    "tags": [
+      "github-actions",
+      "release",
+      "sbom"
+    ],
+    "fileTypes": [
+      "yaml"
+    ],
+    "pattern": "(?i)(softprops/action-gh-release|gh\\s+release\\s+(?:create|upload)|upload-release-asset|checksums\\.txt|release-binar(?:y|ies)|release assets?|dist/\\*)",
+    "requiredFilePattern": "(?i)(\\bsbom\\b|spdx|cyclonedx|syft|anchore/sbom-action|\\.cdx\\.json|\\.spdx(?:\\.json)?)",
+    "description": "Release workflows that publish binaries or checksums without an SBOM make it harder for consumers to inventory released software.",
+    "recommendation": "Generate an SPDX or CycloneDX SBOM during release and publish it with the release assets and checksum manifest."
   }
 ]

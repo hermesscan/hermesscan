@@ -18,6 +18,7 @@ type compiledRule struct {
 	regex              *regexp.Regexp
 	excludeRegex       *regexp.Regexp
 	contextBeforeRegex *regexp.Regexp
+	requiredFileRegex  *regexp.Regexp
 }
 
 // Scan applies rules to candidate files under root using default options.
@@ -102,25 +103,33 @@ func compileRules(loadedRules []rules.Rule, options Options) ([]compiledRule, er
 				return nil, fmt.Errorf("compile rule %q context-before pattern: %w", rule.ID, err)
 			}
 		}
-		compiled = append(compiled, compiledRule{rule: rule, regex: re, excludeRegex: excludeRe, contextBeforeRegex: contextBeforeRe})
+		var requiredFileRe *regexp.Regexp
+		if strings.TrimSpace(rule.RequiredFilePattern) != "" {
+			requiredFileRe, err = regexp.Compile(rule.RequiredFilePattern)
+			if err != nil {
+				return nil, fmt.Errorf("compile rule %q required-file pattern: %w", rule.ID, err)
+			}
+		}
+		compiled = append(compiled, compiledRule{rule: rule, regex: re, excludeRegex: excludeRe, contextBeforeRegex: contextBeforeRe, requiredFileRegex: requiredFileRe})
 	}
 	return compiled, nil
 }
 
 func scanFile(candidate files.Candidate, compiled []compiledRule, options Options) ([]Finding, int, error) {
-	file, err := os.Open(candidate.Path)
+	data, err := os.ReadFile(candidate.Path)
 	if err != nil {
-		return nil, 0, fmt.Errorf("open %q: %w", candidate.Path, err)
+		return nil, 0, fmt.Errorf("read %q: %w", candidate.Path, err)
 	}
-	defer file.Close()
+	content := string(data)
 
 	var findings []Finding
 	suppressedCount := 0
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(strings.NewReader(content))
 	lineNumber := 0
 	fileSuppressions := []string{}
 	nextLineSuppressions := make(map[int][]string)
 	previousLines := []string{}
+	reportedFileRules := make(map[string]bool)
 
 	for scanner.Scan() {
 		lineNumber++
@@ -150,6 +159,16 @@ func scanFile(candidate files.Candidate, compiled []compiledRule, options Option
 				continue
 			}
 
+			if item.requiredFileRegex != nil {
+				if item.requiredFileRegex.MatchString(content) {
+					continue
+				}
+				ruleKey := strings.ToUpper(item.rule.ID)
+				if reportedFileRules[ruleKey] {
+					continue
+				}
+			}
+
 			if hasRuleExclusionContext(item, line, previousLines) {
 				continue
 			}
@@ -176,6 +195,9 @@ func scanFile(candidate files.Candidate, compiled []compiledRule, options Option
 			}
 			finding.Fingerprint = Fingerprint(finding)
 			findings = append(findings, finding)
+			if item.requiredFileRegex != nil {
+				reportedFileRules[strings.ToUpper(item.rule.ID)] = true
+			}
 		}
 
 		previousLines = append(previousLines, line)

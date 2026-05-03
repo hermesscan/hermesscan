@@ -84,6 +84,27 @@ func TestValidateCatalogRejectsInvalidPattern(t *testing.T) {
 	}
 }
 
+func TestValidateCatalogRejectsInvalidRequiredFilePattern(t *testing.T) {
+	loaded := []Rule{
+		{
+			ID:                  "HMS0001",
+			Name:                "Invalid required file regex",
+			Severity:            "Low",
+			Category:            "test",
+			FileTypes:           []string{"yaml"},
+			Tags:                []string{"test"},
+			Pattern:             "release",
+			RequiredFilePattern: "(",
+			Description:         "description",
+			Recommendation:      "recommendation",
+		},
+	}
+	err := ValidateCatalog(loaded)
+	if err == nil || !strings.Contains(err.Error(), "invalid requiredFilePattern") {
+		t.Fatalf("expected invalid requiredFilePattern error, got %v", err)
+	}
+}
+
 func TestDefaultCatalogMatchesRepositoryCatalog(t *testing.T) {
 	embedded, err := LoadDefault()
 	if err != nil {

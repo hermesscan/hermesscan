@@ -11,13 +11,15 @@ HermesScan is **not** a CI platform. It is a scanner and quality gate for the sc
 
 ## Status
 
-Current development version: `0.8.0`
+Current development version: `0.9.0`
 
 Latest release: `0.8.0`
 
 > HermesScan is currently in public preview. Rules are intentionally conservative and may evolve as the scanner matures.
 
-Version 0.8.0 focuses on rule precision and packaging polish:
+Version 0.9.0 focuses on SBOM-aware release workflow assurance and post-v0.8 packaging planning.
+
+Version 0.8.0 focused on rule precision and packaging polish:
 
 - rule catalog validation with `rules validate`
 - sync checks between embedded and repository rule catalogs
@@ -33,7 +35,7 @@ Version 0.8.0 focuses on rule precision and packaging polish:
 
 ```powershell
 go test .\...
-go build -ldflags "-X main.version=0.8.0" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.9.0" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe version
 .\hermesscan.exe scan .\examples --summary --no-fail
 ```
@@ -42,7 +44,7 @@ go build -ldflags "-X main.version=0.8.0" -o .\hermesscan.exe .\cmd\hermesscan
 
 ```bash
 go test ./...
-go build -ldflags "-X main.version=0.8.0" -o ./hermesscan ./cmd/hermesscan
+go build -ldflags "-X main.version=0.9.0" -o ./hermesscan ./cmd/hermesscan
 ./hermesscan version
 ./hermesscan scan ./examples --summary --no-fail
 ```
@@ -58,6 +60,8 @@ Additional guides:
 - [Rule reference](docs/rules.md)
 - [Rule authoring guide](docs/rule-authoring.md)
 - [Changed-file scans](docs/changed-only.md)
+- [SBOM and release assurance](docs/sbom-release-assurance.md)
+- [v0.9.0 milestone](docs/milestones/v0.9.0.md)
 - [v0.8.0 release checklist](docs/release-v0.8.0-checklist.md)
 - [v0.8.0 release notes](docs/release-v0.8.0.md)
 - [v0.7.0 release notes](docs/release-v0.7.0.md)
@@ -352,7 +356,7 @@ Before tagging a release:
 ```powershell
 go test .\...
 go vet .\...
-go build -ldflags "-X main.version=0.8.0" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.9.0" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe version
 .\hermesscan.exe rules validate
 .\hermesscan.exe rules docs --output .\docs\rules.md
@@ -366,7 +370,7 @@ After publishing a release, run the `Release smoke test` workflow for the new ve
 PowerShell 5.1-compatible build script:
 
 ```powershell
-.\scripts\Build-HermesScan.ps1 -AllTargets -Version 0.8.0
+.\scripts\Build-HermesScan.ps1 -AllTargets -Version 0.9.0
 ```
 
 Outputs are written to `dist/` with `.sha256` checksum files.

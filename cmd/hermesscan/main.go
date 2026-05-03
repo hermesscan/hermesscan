@@ -16,7 +16,7 @@ import (
 	"github.com/hermesscan/hermesscan/internal/scanner"
 )
 
-var version = "0.8.0"
+var version = "0.9.0"
 
 type repeatFlag []string
 
@@ -513,6 +513,9 @@ func runRulesShow(args []string) int {
 				fmt.Fprintf(os.Stdout, "Context before pattern: %s\n", rule.ContextBeforePattern)
 				fmt.Fprintf(os.Stdout, "Context before lines: %d\n", rule.ContextBeforeLines)
 			}
+			if rule.RequiredFilePattern != "" {
+				fmt.Fprintf(os.Stdout, "Required file pattern: %s\n", rule.RequiredFilePattern)
+			}
 			fmt.Fprintf(os.Stdout, "Description: %s\n", rule.Description)
 			fmt.Fprintf(os.Stdout, "Recommendation: %s\n", rule.Recommendation)
 			return 0
@@ -648,12 +651,12 @@ func writeRulesMarkdown(writer io.Writer, loadedRules []rules.Rule) {
 	fmt.Fprintln(writer)
 	for _, rule := range loadedRules {
 		fmt.Fprintf(writer, "## %s - %s\n\n", rule.ID, rule.Name)
-		fmt.Fprintf(writer, "**Severity:** %s  \n", rule.Severity)
-		fmt.Fprintf(writer, "**Category:** %s  \n", rule.Category)
+		fmt.Fprintf(writer, "**Severity:** %s\n\n", rule.Severity)
+		fmt.Fprintf(writer, "**Category:** %s\n\n", rule.Category)
 		if len(rule.Tags) > 0 {
-			fmt.Fprintf(writer, "**Tags:** `%s`  \n", strings.Join(rule.Tags, "`, `"))
+			fmt.Fprintf(writer, "**Tags:** `%s`\n\n", strings.Join(rule.Tags, "`, `"))
 		}
-		fmt.Fprintf(writer, "**File types:** `%s`  \n\n", strings.Join(rule.FileTypes, "`, `"))
+		fmt.Fprintf(writer, "**File types:** `%s`\n\n", strings.Join(rule.FileTypes, "`, `"))
 		fmt.Fprintf(writer, "%s\n\n", rule.Description)
 		fmt.Fprintf(writer, "**Recommendation:** %s\n\n", rule.Recommendation)
 		fmt.Fprintln(writer, "```text")
@@ -672,6 +675,14 @@ func writeRulesMarkdown(writer io.Writer, loadedRules []rules.Rule) {
 			fmt.Fprintf(writer, "**Context before pattern:** within the previous %d line(s)\n\n", rule.ContextBeforeLines)
 			fmt.Fprintln(writer, "```text")
 			fmt.Fprintln(writer, rule.ContextBeforePattern)
+			fmt.Fprintln(writer, "```")
+			fmt.Fprintln(writer)
+		}
+		if rule.RequiredFilePattern != "" {
+			fmt.Fprintln(writer, "**Required file pattern:**")
+			fmt.Fprintln(writer)
+			fmt.Fprintln(writer, "```text")
+			fmt.Fprintln(writer, rule.RequiredFilePattern)
 			fmt.Fprintln(writer, "```")
 			fmt.Fprintln(writer)
 		}

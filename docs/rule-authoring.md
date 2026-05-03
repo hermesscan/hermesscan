@@ -26,6 +26,7 @@ Optional precision fields:
 | `excludePattern` | Go regular expression matched against the same line. If it matches, the finding is skipped. |
 | `contextBeforePattern` | Go regular expression matched against previous lines. If it matches within the configured window, the finding is skipped. |
 | `contextBeforeLines` | Number of previous lines to inspect when `contextBeforePattern` is set. Must be at least `1`. |
+| `requiredFilePattern` | Go regular expression that must appear somewhere in the same file. If `pattern` matches but this file-level pattern is absent, HermesScan reports the finding once for that file. |
 
 ## Pattern choice
 
@@ -43,6 +44,8 @@ Use `contextBeforePattern` when setup on a nearby previous line makes the matche
 - `HMS0010` ignores `pip install` when `PIP_CACHE_DIR` is set shortly before the install and points at a run-scoped temporary location.
 
 Avoid using context windows as a substitute for parsing a full file. If a rule needs deep YAML, shell, or PowerShell semantics, keep the regex rule conservative and add parser-backed scanner behavior later.
+
+Use `requiredFilePattern` for conservative absence checks where a local trigger is meaningful only if another file-level signal is missing. For example, `HMS0017` flags release workflows that publish binaries, checksums, or release assets when the same workflow does not mention an SBOM, SPDX, CycloneDX, or Syft output. Keep these rules advisory unless the absence signal is very specific.
 
 ## Severity
 

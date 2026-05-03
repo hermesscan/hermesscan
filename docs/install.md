@@ -140,7 +140,7 @@ Use `hermesscan-windows-arm64.exe`, `hermesscan-linux-arm64`, or `hermesscan-dar
 git clone https://github.com/hermesscan/hermesscan.git
 cd hermesscan
 go test ./...
-go build -ldflags "-X main.version=0.8.0" -o hermesscan ./cmd/hermesscan
+go build -ldflags "-X main.version=0.9.0" -o hermesscan ./cmd/hermesscan
 ./hermesscan version
 ```
 
@@ -148,6 +148,6 @@ Windows PowerShell:
 
 ```powershell
 go test .\...
-go build -ldflags "-X main.version=0.8.0" -o .\hermesscan.exe .\cmd\hermesscan
+go build -ldflags "-X main.version=0.9.0" -o .\hermesscan.exe .\cmd\hermesscan
 .\hermesscan.exe version
 ```

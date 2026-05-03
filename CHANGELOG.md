@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.0 - Unreleased
+
+### Added
+
+- Added file-level rule support with `requiredFilePattern` for conservative absence checks.
+- Added `HMS0017` to flag release workflows that publish release assets without an SBOM signal.
+- Added SBOM generation to the release workflow and included the SBOM in release checksum and smoke-test verification.
+
 ## 0.8.0 - 2026-05-03
 
 ### Added

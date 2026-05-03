@@ -123,6 +123,23 @@ func TestDefaultRulePrecisionDockerComposeProjectName(t *testing.T) {
 	}
 }
 
+func TestDefaultRulePrecisionReleaseWorkflowRequiresSBOM(t *testing.T) {
+	releaseWithoutSBOM := scanDefaultRuleFixture(t, "release.yml", "jobs:\n  release:\n    steps:\n      - uses: softprops/action-gh-release@v2\n        with:\n          files: dist/*\n", "HMS0017")
+	if len(releaseWithoutSBOM.Findings) != 1 {
+		t.Fatalf("expected one missing-SBOM finding, got %#v", releaseWithoutSBOM.Findings)
+	}
+
+	releaseWithSBOM := scanDefaultRuleFixture(t, "release.yml", "jobs:\n  release:\n    steps:\n      - uses: anchore/sbom-action@v0\n        with:\n          output-file: dist/hermesscan.spdx.json\n      - uses: softprops/action-gh-release@v2\n        with:\n          files: dist/*\n", "HMS0017")
+	if len(releaseWithSBOM.Findings) != 0 {
+		t.Fatalf("expected no missing-SBOM finding when workflow generates an SBOM, got %#v", releaseWithSBOM.Findings)
+	}
+
+	releaseWithSBOMArtifact := scanDefaultRuleFixture(t, "release.yml", "jobs:\n  release:\n    steps:\n      - run: sha256sum hermesscan-* hermesscan.spdx.json > checksums.txt\n      - uses: softprops/action-gh-release@v2\n", "HMS0017")
+	if len(releaseWithSBOMArtifact.Findings) != 0 {
+		t.Fatalf("expected no missing-SBOM finding when release assets include an SBOM, got %#v", releaseWithSBOMArtifact.Findings)
+	}
+}
+
 func scanDefaultRuleFixture(t *testing.T, filename string, content string, ruleID string) Result {
 	t.Helper()
 

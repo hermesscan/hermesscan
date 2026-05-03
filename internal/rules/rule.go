@@ -12,6 +12,7 @@ type Rule struct {
 	ExcludePattern       string   `json:"excludePattern,omitempty"`
 	ContextBeforePattern string   `json:"contextBeforePattern,omitempty"`
 	ContextBeforeLines   int      `json:"contextBeforeLines,omitempty"`
+	RequiredFilePattern  string   `json:"requiredFilePattern,omitempty"`
 	Description          string   `json:"description"`
 	Recommendation       string   `json:"recommendation"`
 }

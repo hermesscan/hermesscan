@@ -1,6 +1,6 @@
 # HermesScan Rule Reference
 
-Generated for HermesScan 0.8.0.
+Generated for HermesScan 0.9.0.
 
 | ID | Severity | Category | Name |
 |---|---|---|---|
@@ -20,13 +20,17 @@ Generated for HermesScan 0.8.0.
 | `HMS0014` | Medium | supply-chain | GitHub Actions write-all permissions |
 | `HMS0015` | Medium | isolation | GitHub Actions self-hosted runner |
 | `HMS0016` | Medium | cache | GitHub Actions broad cache key |
+| `HMS0017` | Low | supply-chain | Release workflow without SBOM artifact |
 
 ## HMS0001 - Sleep-based synchronization
 
-**Severity:** Medium  
-**Category:** reliability  
-**Tags:** `synchronization`, `flake-risk`  
-**File types:** `bash`, `powershell`, `yaml`, `makefile`  
+**Severity:** Medium
+
+**Category:** reliability
+
+**Tags:** `synchronization`, `flake-risk`
+
+**File types:** `bash`, `powershell`, `yaml`, `makefile`
 
 Sleep-based synchronization can make CI jobs flaky or unnecessarily slow.
 
@@ -38,10 +42,13 @@ Sleep-based synchronization can make CI jobs flaky or unnecessarily slow.
 
 ## HMS0002 - Fixed PostgreSQL port exposure
 
-**Severity:** High  
-**Category:** isolation  
-**Tags:** `ports`, `shared-runner`, `postgresql`  
-**File types:** `bash`, `powershell`, `yaml`, `docker`, `makefile`  
+**Severity:** High
+
+**Category:** isolation
+
+**Tags:** `ports`, `shared-runner`, `postgresql`
+
+**File types:** `bash`, `powershell`, `yaml`, `docker`, `makefile`
 
 Fixed PostgreSQL port exposure can collide on shared runners or concurrent local test runs.
 
@@ -53,10 +60,13 @@ Fixed PostgreSQL port exposure can collide on shared runners or concurrent local
 
 ## HMS0003 - Manual shell background orchestration
 
-**Severity:** High  
-**Category:** orchestration  
-**Tags:** `parallelism`, `shell`  
-**File types:** `bash`, `makefile`  
+**Severity:** High
+
+**Category:** orchestration
+
+**Tags:** `parallelism`, `shell`
+
+**File types:** `bash`, `makefile`
 
 Background jobs inside CI scripts may indicate manual orchestration that is difficult to observe and clean up.
 
@@ -68,10 +78,13 @@ Background jobs inside CI scripts may indicate manual orchestration that is diff
 
 ## HMS0004 - Manual wait orchestration
 
-**Severity:** Medium  
-**Category:** orchestration  
-**Tags:** `parallelism`, `shell`  
-**File types:** `bash`, `makefile`  
+**Severity:** Medium
+
+**Category:** orchestration
+
+**Tags:** `parallelism`, `shell`
+
+**File types:** `bash`, `makefile`
 
 Manual wait logic can hide job dependencies from the CI control plane.
 
@@ -83,10 +96,13 @@ Manual wait logic can hide job dependencies from the CI control plane.
 
 ## HMS0005 - PowerShell background job in CI path
 
-**Severity:** High  
-**Category:** orchestration  
-**Tags:** `powershell`, `background-job`  
-**File types:** `powershell`  
+**Severity:** High
+
+**Category:** orchestration
+
+**Tags:** `powershell`, `background-job`
+
+**File types:** `powershell`
 
 PowerShell background jobs can outlive the intended script scope and complicate CI cleanup.
 
@@ -98,10 +114,13 @@ PowerShell background jobs can outlive the intended script scope and complicate 
 
 ## HMS0006 - PowerShell process lifecycle risk
 
-**Severity:** Medium  
-**Category:** lifecycle  
-**Tags:** `powershell`, `process`  
-**File types:** `powershell`  
+**Severity:** Medium
+
+**Category:** lifecycle
+
+**Tags:** `powershell`, `process`
+
+**File types:** `powershell`
 
 Started processes can leak across build steps if they are not tracked and cleaned up.
 
@@ -113,10 +132,13 @@ Started processes can leak across build steps if they are not tracked and cleane
 
 ## HMS0007 - Docker Compose service startup
 
-**Severity:** Medium  
-**Category:** isolation  
-**Tags:** `docker`, `compose`  
-**File types:** `bash`, `powershell`, `yaml`, `makefile`  
+**Severity:** Medium
+
+**Category:** isolation
+
+**Tags:** `docker`, `compose`
+
+**File types:** `bash`, `powershell`, `yaml`, `makefile`
 
 Docker Compose startup without an explicit project name can collide across concurrent jobs when networks, volumes, or ports are shared.
 
@@ -140,10 +162,13 @@ Docker Compose startup without an explicit project name can collide across concu
 
 ## HMS0008 - Shared temp path
 
-**Severity:** Medium  
-**Category:** isolation  
-**Tags:** `filesystem`, `temp`  
-**File types:** `bash`, `powershell`, `yaml`, `makefile`  
+**Severity:** Medium
+
+**Category:** isolation
+
+**Tags:** `filesystem`, `temp`
+
+**File types:** `bash`, `powershell`, `yaml`, `makefile`
 
 Shared temporary paths can cause cross-job contamination on shared runners.
 
@@ -155,10 +180,13 @@ Shared temporary paths can cause cross-job contamination on shared runners.
 
 ## HMS0009 - Mutable GitHub Action reference
 
-**Severity:** Low  
-**Category:** supply-chain  
-**Tags:** `github-actions`, `pinning`  
-**File types:** `yaml`  
+**Severity:** Low
+
+**Category:** supply-chain
+
+**Tags:** `github-actions`, `pinning`
+
+**File types:** `yaml`
 
 Mutable action references can change without review and reduce workflow reproducibility.
 
@@ -170,10 +198,13 @@ uses:\s+[^@\s]+@(?:main|master|latest)
 
 ## HMS0010 - Package install cache collision risk
 
-**Severity:** Low  
-**Category:** cache  
-**Tags:** `package-manager`  
-**File types:** `bash`, `powershell`, `yaml`, `makefile`  
+**Severity:** Low
+
+**Category:** cache
+
+**Tags:** `package-manager`
+
+**File types:** `bash`, `powershell`, `yaml`, `makefile`
 
 Package managers may use shared caches that can behave poorly under concurrent jobs. This rule is advisory unless the install uses an explicit per-runner or per-run cache location.
 
@@ -197,10 +228,13 @@ Package managers may use shared caches that can behave poorly under concurrent j
 
 ## HMS0011 - Docker build cache contention risk
 
-**Severity:** Medium  
-**Category:** cache  
-**Tags:** `docker`, `buildkit`  
-**File types:** `bash`, `powershell`, `yaml`, `makefile`  
+**Severity:** Medium
+
+**Category:** cache
+
+**Tags:** `docker`, `buildkit`
+
+**File types:** `bash`, `powershell`, `yaml`, `makefile`
 
 Concurrent Docker builds may contend over build cache or daemon state on shared runners.
 
@@ -212,10 +246,13 @@ Concurrent Docker builds may contend over build cache or daemon state on shared 
 
 ## HMS0012 - Native command exit code may be ignored
 
-**Severity:** Medium  
-**Category:** reliability  
-**Tags:** `powershell`, `native-command`  
-**File types:** `powershell`  
+**Severity:** Medium
+
+**Category:** reliability
+
+**Tags:** `powershell`, `native-command`
+
+**File types:** `powershell`
 
 Windows PowerShell 5.1 does not automatically throw when native commands return non-zero exit codes.
 
@@ -227,10 +264,13 @@ Windows PowerShell 5.1 does not automatically throw when native commands return 
 
 ## HMS0013 - GitHub pull_request_target trigger
 
-**Severity:** High  
-**Category:** supply-chain  
-**Tags:** `github-actions`, `pull-request`, `permissions`  
-**File types:** `yaml`  
+**Severity:** High
+
+**Category:** supply-chain
+
+**Tags:** `github-actions`, `pull-request`, `permissions`
+
+**File types:** `yaml`
 
 The pull_request_target trigger can expose privileged repository context to pull-request workflows when used incorrectly.
 
@@ -242,10 +282,13 @@ The pull_request_target trigger can expose privileged repository context to pull
 
 ## HMS0014 - GitHub Actions write-all permissions
 
-**Severity:** Medium  
-**Category:** supply-chain  
-**Tags:** `github-actions`, `permissions`  
-**File types:** `yaml`  
+**Severity:** Medium
+
+**Category:** supply-chain
+
+**Tags:** `github-actions`, `permissions`
+
+**File types:** `yaml`
 
 Broad write-all workflow permissions increase blast radius if a job or action is compromised.
 
@@ -257,10 +300,13 @@ Broad write-all workflow permissions increase blast radius if a job or action is
 
 ## HMS0015 - GitHub Actions self-hosted runner
 
-**Severity:** Medium  
-**Category:** isolation  
-**Tags:** `github-actions`, `runner`, `self-hosted`  
-**File types:** `yaml`  
+**Severity:** Medium
+
+**Category:** isolation
+
+**Tags:** `github-actions`, `runner`, `self-hosted`
+
+**File types:** `yaml`
 
 Self-hosted runners can share filesystem, Docker, network, and cache state across jobs when not isolated carefully.
 
@@ -272,10 +318,13 @@ Self-hosted runners can share filesystem, Docker, network, and cache state acros
 
 ## HMS0016 - GitHub Actions broad cache key
 
-**Severity:** Medium  
-**Category:** cache  
-**Tags:** `github-actions`, `cache`  
-**File types:** `yaml`  
+**Severity:** Medium
+
+**Category:** cache
+
+**Tags:** `github-actions`, `cache`
+
+**File types:** `yaml`
 
 Broad cache keys based mostly on runner OS can cause unrelated branches or dependency states to reuse the same writable cache namespace.
 
@@ -289,5 +338,29 @@ Broad cache keys based mostly on runner OS can cause unrelated branches or depen
 
 ```text
 (?i)hashFiles\s*\(|package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|go\.sum|Cargo\.lock|requirements(?:\.txt)?|poetry\.lock|Pipfile\.lock|composer\.lock|Gemfile\.lock|github\.(?:ref|sha)|matrix\.
+```
+
+## HMS0017 - Release workflow without SBOM artifact
+
+**Severity:** Low
+
+**Category:** supply-chain
+
+**Tags:** `github-actions`, `release`, `sbom`
+
+**File types:** `yaml`
+
+Release workflows that publish binaries or checksums without an SBOM make it harder for consumers to inventory released software.
+
+**Recommendation:** Generate an SPDX or CycloneDX SBOM during release and publish it with the release assets and checksum manifest.
+
+```text
+(?i)(softprops/action-gh-release|gh\s+release\s+(?:create|upload)|upload-release-asset|checksums\.txt|release-binar(?:y|ies)|release assets?|dist/\*)
+```
+
+**Required file pattern:**
+
+```text
+(?i)(\bsbom\b|spdx|cyclonedx|syft|anchore/sbom-action|\.cdx\.json|\.spdx(?:\.json)?)
 ```
 

@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to smoke test, for example 0.8.0'
+        description: 'Version to smoke test, for example 0.9.0'
         required: true
-        default: '0.8.0'
+        default: '0.9.0'
   release:
     types:
       - published
@@ -49,6 +49,7 @@ jobs:
             'hermesscan-linux-arm64',
             'hermesscan-darwin-amd64',
             'hermesscan-darwin-arm64',
+            'hermesscan.spdx.json',
             'checksums.txt'
           )
 
@@ -69,7 +70,8 @@ jobs:
             'hermesscan-linux-amd64',
             'hermesscan-linux-arm64',
             'hermesscan-darwin-amd64',
-            'hermesscan-darwin-arm64'
+            'hermesscan-darwin-arm64',
+            'hermesscan.spdx.json'
           )
 
           $checksumsPath = Join-Path 'dist' 'checksums.txt'

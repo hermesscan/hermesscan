@@ -68,6 +68,11 @@ func ValidateCatalog(loaded []Rule) error {
 				return fmt.Errorf("%s contextBeforeLines must be at least 1 when contextBeforePattern is set", label)
 			}
 		}
+		if strings.TrimSpace(rule.RequiredFilePattern) != "" {
+			if _, err := regexp.Compile(rule.RequiredFilePattern); err != nil {
+				return fmt.Errorf("%s has invalid requiredFilePattern: %w", label, err)
+			}
+		}
 		if strings.TrimSpace(rule.Description) == "" {
 			return fmt.Errorf("%s is missing description", label)
 		}
