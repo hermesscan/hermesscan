@@ -42,6 +42,17 @@ When running from the current directory without PATH installation, PowerShell re
 .\hermesscan.exe scan . --summary --no-fail
 ```
 
+## Scoop
+
+Install from the raw Scoop manifest:
+
+```powershell
+scoop install https://raw.githubusercontent.com/hermesscan/hermesscan/main/packaging/scoop/hermesscan.json
+hermesscan version
+```
+
+The raw manifest is a prototype and currently points at the latest published release assets. See [Scoop packaging plan](scoop-packaging.md) for validation and publishing notes.
+
 ## Linux
 
 ```bash

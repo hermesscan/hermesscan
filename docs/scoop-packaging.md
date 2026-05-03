@@ -4,6 +4,17 @@ HermesScan should support Scoop after the release asset contract is stable.
 
 This plan covers the local prototype manifest in `packaging/scoop/hermesscan.json`. It does not publish a bucket yet.
 
+## Install from GitHub
+
+Until HermesScan has a Scoop bucket, install directly from the raw manifest:
+
+```powershell
+scoop install https://raw.githubusercontent.com/hermesscan/hermesscan/main/packaging/scoop/hermesscan.json
+hermesscan version
+```
+
+This installs the currently committed manifest. The prototype manifest currently points at the published `v0.8.0` release.
+
 ## Package shape
 
 The Scoop package should install the existing Windows release binary directly from GitHub Releases:
