@@ -58,6 +58,8 @@ Additional guides:
 - [Rule reference](docs/rules.md)
 - [Rule authoring guide](docs/rule-authoring.md)
 - [Changed-file scans](docs/changed-only.md)
+- [v0.8.0 release checklist](docs/release-v0.8.0-checklist.md)
+- [v0.8.0 release notes](docs/release-v0.8.0.md)
 - [v0.7.0 release notes](docs/release-v0.7.0.md)
 
 Short Windows development note: PowerShell does not execute programs from the current directory by bare name. Use:

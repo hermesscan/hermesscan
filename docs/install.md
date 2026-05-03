@@ -72,24 +72,67 @@ Use `hermesscan-darwin-amd64` for Intel Macs and `hermesscan-darwin-arm64` for A
 
 Release artifacts include `checksums.txt`. After downloading a binary, verify it against the published checksum.
 
-Linux/macOS:
+Linux:
 
 ```bash
 VERSION=0.7.0
-curl -fsSL -O "https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}/checksums.txt"
-sha256sum -c checksums.txt --ignore-missing
+ASSET=hermesscan-linux-amd64
+BASE_URL="https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}"
+
+curl -fsSLO "${BASE_URL}/${ASSET}"
+curl -fsSLO "${BASE_URL}/checksums.txt"
+grep "  ${ASSET}$" checksums.txt | sha256sum -c -
+chmod +x "./${ASSET}"
+sudo install -m 0755 "./${ASSET}" /usr/local/bin/hermesscan
+hermesscan version
+```
+
+macOS:
+
+```bash
+VERSION=0.7.0
+ASSET=hermesscan-darwin-arm64
+BASE_URL="https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}"
+
+curl -fsSLO "${BASE_URL}/${ASSET}"
+curl -fsSLO "${BASE_URL}/checksums.txt"
+EXPECTED="$(grep "  ${ASSET}$" checksums.txt | awk '{print $1}')"
+ACTUAL="$(shasum -a 256 "./${ASSET}" | awk '{print $1}')"
+test "${ACTUAL}" = "${EXPECTED}"
+chmod +x "./${ASSET}"
+sudo install -m 0755 "./${ASSET}" /usr/local/bin/hermesscan
+hermesscan version
 ```
 
 Windows PowerShell:
 
 ```powershell
 $Version = '0.7.0'
-Invoke-WebRequest -Uri "https://github.com/hermesscan/hermesscan/releases/download/v$($Version)/checksums.txt" -OutFile .\checksums.txt
-Get-FileHash .\hermesscan.exe -Algorithm SHA256
-Get-Content .\checksums.txt
+$Asset = 'hermesscan-windows-amd64.exe'
+$BaseUri = "https://github.com/hermesscan/hermesscan/releases/download/v$($Version)"
+
+Invoke-WebRequest -Uri "$BaseUri/$Asset" -OutFile ".\$Asset"
+Invoke-WebRequest -Uri "$BaseUri/checksums.txt" -OutFile .\checksums.txt
+
+$line = Get-Content .\checksums.txt |
+    Where-Object { $_ -match "\s+$([regex]::Escape($Asset))$" } |
+    Select-Object -First 1
+if (-not $line) {
+    throw "No checksum entry found for $Asset."
+}
+
+$expected = ($line -split '\s+')[0].ToLowerInvariant()
+$actual = (Get-FileHash -LiteralPath ".\$Asset" -Algorithm SHA256).Hash.ToLowerInvariant()
+if ($actual -ne $expected) {
+    throw "Checksum mismatch for $Asset."
+}
+
+New-Item -Path "$env:USERPROFILE\bin" -ItemType Directory -Force | Out-Null
+Copy-Item -Path ".\$Asset" -Destination "$env:USERPROFILE\bin\hermesscan.exe" -Force
+& "$env:USERPROFILE\bin\hermesscan.exe" version
 ```
 
-Compare the `Get-FileHash` value with the matching line in `checksums.txt`.
+Use `hermesscan-windows-arm64.exe`, `hermesscan-linux-arm64`, or `hermesscan-darwin-amd64` when that asset matches your platform.
 
 ## Build from source
 

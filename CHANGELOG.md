@@ -11,6 +11,9 @@
 - Added a rule authoring guide for rule fields, contextual precision patterns, and validation workflow.
 - Added a GitHub Action workflow example that combines SARIF upload, a report artifact, and a separate summary gate.
 - Expanded release smoke testing to verify every published binary asset, checksum entries, and native CLI execution.
+- Expanded the baseline adoption guide with advisory, gated, and baseline reduction examples.
+- Added copy-paste checksum verification examples for Windows, Linux, and macOS installs.
+- Added v0.8.0 release checklist and draft release notes.
 
 ### Changed
 
