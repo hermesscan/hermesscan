@@ -61,6 +61,7 @@ Additional guides:
 - [Rule authoring guide](docs/rule-authoring.md)
 - [Changed-file scans](docs/changed-only.md)
 - [SBOM and release assurance](docs/sbom-release-assurance.md)
+- [Scoop packaging plan](docs/scoop-packaging.md)
 - [v0.9.0 milestone](docs/milestones/v0.9.0.md)
 - [v0.8.0 release checklist](docs/release-v0.8.0-checklist.md)
 - [v0.8.0 release notes](docs/release-v0.8.0.md)
