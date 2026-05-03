@@ -41,7 +41,7 @@ jobs:
           fetch-depth: 0
 
       - name: Run HermesScan on changed files
-        uses: hermesscan/hermesscan@v0.7.0
+        uses: hermesscan/hermesscan@v0.8.0
         with:
           path: .
           changed-only: 'true'
