@@ -7,7 +7,7 @@ HermesScan is distributed as a native binary for Windows, Linux, and macOS.
 Download the Windows release binary from GitHub Releases, then place it somewhere on your user PATH.
 
 ```powershell
-$Version = '0.8.0'
+$Version = '0.9.0'
 $Uri = "https://github.com/hermesscan/hermesscan/releases/download/v$($Version)/hermesscan-windows-amd64.exe"
 New-Item -Path "$env:USERPROFILE\bin" -ItemType Directory -Force | Out-Null
 Invoke-WebRequest -Uri $Uri -OutFile "$env:USERPROFILE\bin\hermesscan.exe"
@@ -56,7 +56,7 @@ The raw manifest is a prototype and currently points at the latest published rel
 ## Linux
 
 ```bash
-VERSION=0.8.0
+VERSION=0.9.0
 curl -fsSL -o hermesscan-linux-amd64 \
   "https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}/hermesscan-linux-amd64"
 chmod +x ./hermesscan-linux-amd64
@@ -69,7 +69,7 @@ hermesscan version
 Apple Silicon:
 
 ```bash
-VERSION=0.8.0
+VERSION=0.9.0
 curl -fsSL -o hermesscan-darwin-arm64 \
   "https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}/hermesscan-darwin-arm64"
 chmod +x ./hermesscan-darwin-arm64
@@ -86,7 +86,7 @@ Release artifacts include `checksums.txt`. After downloading a binary, verify it
 Linux:
 
 ```bash
-VERSION=0.8.0
+VERSION=0.9.0
 ASSET=hermesscan-linux-amd64
 BASE_URL="https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}"
 
@@ -101,7 +101,7 @@ hermesscan version
 macOS:
 
 ```bash
-VERSION=0.8.0
+VERSION=0.9.0
 ASSET=hermesscan-darwin-arm64
 BASE_URL="https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}"
 
@@ -118,7 +118,7 @@ hermesscan version
 Windows PowerShell:
 
 ```powershell
-$Version = '0.8.0'
+$Version = '0.9.0'
 $Asset = 'hermesscan-windows-amd64.exe'
 $BaseUri = "https://github.com/hermesscan/hermesscan/releases/download/v$($Version)"
 

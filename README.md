@@ -13,7 +13,7 @@ HermesScan is **not** a CI platform. It is a scanner and quality gate for the sc
 
 Current development version: `0.9.0`
 
-Latest release: `0.8.0`
+Latest release: `0.9.0`
 
 > HermesScan is currently in public preview. Rules are intentionally conservative and may evolve as the scanner matures.
 
@@ -191,11 +191,11 @@ Scan only files changed from a base ref:
 
 See [docs/github-action.md](docs/github-action.md).
 
-Basic usage after the `v0.8.0` tag is published. The action tag and downloaded CLI version are both `0.8.0` by default:
+Basic usage after the `v0.9.0` tag is published. The action tag and downloaded CLI version are both `0.9.0` by default:
 
 ```yaml
 - name: Run HermesScan
-  uses: hermesscan/hermesscan@v0.8.0
+  uses: hermesscan/hermesscan@v0.9.0
   with:
     path: .
     format: summary
@@ -206,7 +206,7 @@ Run selected rules through the action:
 
 ```yaml
 - name: Run selected HermesScan rules
-  uses: hermesscan/hermesscan@v0.8.0
+  uses: hermesscan/hermesscan@v0.9.0
   with:
     path: .
     rule: HMS0002,HMS0013
@@ -218,7 +218,7 @@ SARIF upload:
 
 ```yaml
 - name: Generate HermesScan SARIF
-  uses: hermesscan/hermesscan@v0.8.0
+  uses: hermesscan/hermesscan@v0.9.0
   with:
     path: .
     format: sarif

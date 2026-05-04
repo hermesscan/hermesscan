@@ -48,7 +48,7 @@ With the GitHub Action:
 
 ```yaml
 - name: Run HermesScan
-  uses: hermesscan/hermesscan@v0.8.0
+  uses: hermesscan/hermesscan@v0.9.0
   with:
     path: .
     baseline: .hermesscan-baseline.json
@@ -59,7 +59,7 @@ For early rollout, run the Action in advisory mode first:
 
 ```yaml
 - name: Run HermesScan advisory scan
-  uses: hermesscan/hermesscan@v0.8.0
+  uses: hermesscan/hermesscan@v0.9.0
   with:
     path: .
     format: summary
@@ -70,7 +70,7 @@ Then switch to the baseline gate:
 
 ```yaml
 - name: Run HermesScan baseline gate
-  uses: hermesscan/hermesscan@v0.8.0
+  uses: hermesscan/hermesscan@v0.9.0
   with:
     path: .
     baseline: .hermesscan-baseline.json
