@@ -1,16 +1,16 @@
 {
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Static analyzer for build scripts, CI scripts, and pipeline definitions.",
   "homepage": "https://github.com/hermesscan/hermesscan",
   "license": "MIT",
   "architecture": {
     "64bit": {
-      "url": "https://github.com/hermesscan/hermesscan/releases/download/v0.8.0/hermesscan-windows-amd64.exe#/hermesscan.exe",
-      "hash": "2711bff7c4ad8f532eead19adce02bcc0913450ad3f7efc03af945cc2b2dea5d"
+      "url": "https://github.com/hermesscan/hermesscan/releases/download/v0.9.0/hermesscan-windows-amd64.exe#/hermesscan.exe",
+      "hash": "a12c75034718a1cb16220b13f1103d21643288173209d8b2a20fdb2473674e08"
     },
     "arm64": {
-      "url": "https://github.com/hermesscan/hermesscan/releases/download/v0.8.0/hermesscan-windows-arm64.exe#/hermesscan.exe",
-      "hash": "1ca067b8f1f3cf3022474c763dc143e68fa4513e4c19f1abf7b609eea5e2ed69"
+      "url": "https://github.com/hermesscan/hermesscan/releases/download/v0.9.0/hermesscan-windows-arm64.exe#/hermesscan.exe",
+      "hash": "92318af852cc6ca6c71730a69325fc9da7d771cd725412b2587b8de8308a4bd3"
     }
   },
   "bin": "hermesscan.exe",

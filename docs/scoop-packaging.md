@@ -13,7 +13,7 @@ scoop install https://raw.githubusercontent.com/hermesscan/hermesscan/main/packa
 hermesscan version
 ```
 
-This installs the currently committed manifest. The prototype manifest currently points at the published `v0.8.0` release.
+This installs the currently committed manifest. The prototype manifest currently points at the published `v0.9.0` release.
 
 ## Package shape
 
@@ -34,17 +34,17 @@ Prototype manifest shape:
 
 ```json
 {
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Static analyzer for build scripts, CI scripts, and pipeline definitions.",
   "homepage": "https://github.com/hermesscan/hermesscan",
   "license": "MIT",
   "architecture": {
     "64bit": {
-      "url": "https://github.com/hermesscan/hermesscan/releases/download/v0.8.0/hermesscan-windows-amd64.exe#/hermesscan.exe",
+      "url": "https://github.com/hermesscan/hermesscan/releases/download/v0.9.0/hermesscan-windows-amd64.exe#/hermesscan.exe",
       "hash": "<sha256 from checksums.txt>"
     },
     "arm64": {
-      "url": "https://github.com/hermesscan/hermesscan/releases/download/v0.8.0/hermesscan-windows-arm64.exe#/hermesscan.exe",
+      "url": "https://github.com/hermesscan/hermesscan/releases/download/v0.9.0/hermesscan-windows-arm64.exe#/hermesscan.exe",
       "hash": "<sha256 from checksums.txt>"
     }
   },
@@ -91,7 +91,7 @@ The update workflow should:
 Refresh the local prototype manifest:
 
 ```powershell
-.\scripts\Update-ScoopManifest.ps1 -Version 0.8.0
+.\scripts\Update-ScoopManifest.ps1 -Version 0.9.0
 ```
 
 Validate downloads and hashes without installing:
@@ -112,10 +112,10 @@ hermesscan version
 Expected version output for the prototype manifest:
 
 ```text
-HermesScan 0.8.0
+HermesScan 0.9.0
 ```
 
-The local prototype has been validated against the published `v0.8.0` release with `scoop download` for `64bit` and `arm64`, plus `scoop install` on `64bit`.
+The local prototype has been validated against the published `v0.9.0` release with `scoop download` for `64bit` and `arm64`, plus `scoop install` on `64bit`.
 
 ## Open decisions
 
