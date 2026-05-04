@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.0 - Unreleased
+
+### Added
+
+- Started the v0.10.0 development cycle with adoption polish, distribution readiness, release-integrity rules, and configuration workflow planning.
+
 ## 0.9.0 - 2026-05-04
 
 ### Added
