@@ -302,5 +302,23 @@
     "requiredFilePattern": "(?i)(\\bsbom\\b|spdx|cyclonedx|syft|anchore/sbom-action|\\.cdx\\.json|\\.spdx(?:\\.json)?)",
     "description": "Release workflows that publish binaries or checksums without an SBOM make it harder for consumers to inventory released software.",
     "recommendation": "Generate an SPDX or CycloneDX SBOM during release and publish it with the release assets and checksum manifest."
+  },
+  {
+    "id": "HMS0018",
+    "name": "Release workflow without checksum manifest",
+    "severity": "Low",
+    "category": "supply-chain",
+    "tags": [
+      "github-actions",
+      "release",
+      "checksum"
+    ],
+    "fileTypes": [
+      "yaml"
+    ],
+    "pattern": "(?i)(softprops/action-gh-release|gh\\s+release\\s+(?:create|upload)|upload-release-asset|release-binar(?:y|ies)|release assets?|dist/\\*)",
+    "requiredFilePattern": "(?i)(checksums?\\.txt|sha256sum|shasum\\s+-a\\s*256|Get-FileHash|certutil\\s+-hashfile|\\.sha256\\b)",
+    "description": "Release workflows that publish binaries or release assets without checksum generation make it harder for consumers to verify downloads.",
+    "recommendation": "Generate a checksum manifest such as checksums.txt with SHA-256 hashes and publish it with the release assets."
   }
 ]

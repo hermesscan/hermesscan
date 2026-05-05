@@ -45,7 +45,7 @@ Use `contextBeforePattern` when setup on a nearby previous line makes the matche
 
 Avoid using context windows as a substitute for parsing a full file. If a rule needs deep YAML, shell, or PowerShell semantics, keep the regex rule conservative and add parser-backed scanner behavior later.
 
-Use `requiredFilePattern` for conservative absence checks where a local trigger is meaningful only if another file-level signal is missing. For example, `HMS0017` flags release workflows that publish binaries, checksums, or release assets when the same workflow does not mention an SBOM, SPDX, CycloneDX, or Syft output. Keep these rules advisory unless the absence signal is very specific.
+Use `requiredFilePattern` for conservative absence checks where a local trigger is meaningful only if another file-level signal is missing. For example, `HMS0017` flags release workflows that publish binaries, checksums, or release assets when the same workflow does not mention an SBOM, SPDX, CycloneDX, or Syft output. `HMS0018` uses the same pattern to flag release workflows that publish assets without checksum generation. Keep these rules advisory unless the absence signal is very specific.
 
 ## Severity
 

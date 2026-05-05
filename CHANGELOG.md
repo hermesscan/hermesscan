@@ -6,6 +6,7 @@
 
 - Started the v0.10.0 development cycle with adoption polish, distribution readiness, release-integrity rules, and configuration workflow planning.
 - Added CI-covered contract tests for the local Scoop manifest shape, release URLs, and hashes.
+- Added `HMS0018` to flag release workflows that publish assets without checksum generation.
 
 ## 0.9.0 - 2026-05-04
 

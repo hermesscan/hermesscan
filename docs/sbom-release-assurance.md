@@ -154,7 +154,9 @@ Adapt the build commands and asset names for non-Go projects, but keep the order
 
 This is an advisory rule. It does not prove a project lacks an SBOM across all automation. It identifies workflows that are likely responsible for release assets and should usually publish an SBOM with those assets.
 
-Existing supply-chain rules also support SBOM adoption:
+`HMS0018` flags GitHub release workflows that appear to publish release assets without checksum generation such as `checksums.txt`, `sha256sum`, `shasum -a 256`, or `Get-FileHash`.
+
+Existing supply-chain rules also support release assurance:
 
 - `HMS0009` flags mutable GitHub Action references such as `@main`.
 - `HMS0013` flags risky `pull_request_target` usage.
@@ -163,13 +165,14 @@ Existing supply-chain rules also support SBOM adoption:
 
 ## Adoption guidance
 
-Start with `HMS0017` as advisory:
+Start with `HMS0017` and `HMS0018` as advisory:
 
 ```powershell
 .\hermesscan.exe scan . --rule HMS0017 --summary --no-fail
+.\hermesscan.exe scan . --rule HMS0018 --summary --no-fail
 ```
 
-After the release workflow publishes an SBOM and checksum manifest together, include `HMS0017` in regular supply-chain scans:
+After the release workflow publishes an SBOM and checksum manifest together, include both rules in regular supply-chain scans:
 
 ```powershell
 .\hermesscan.exe scan . --category supply-chain --summary --fail-on high

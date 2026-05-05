@@ -140,6 +140,23 @@ func TestDefaultRulePrecisionReleaseWorkflowRequiresSBOM(t *testing.T) {
 	}
 }
 
+func TestDefaultRulePrecisionReleaseWorkflowRequiresChecksums(t *testing.T) {
+	releaseWithoutChecksums := scanDefaultRuleFixture(t, "release.yml", "jobs:\n  release:\n    steps:\n      - uses: softprops/action-gh-release@v2\n        with:\n          files: dist/*\n", "HMS0018")
+	if len(releaseWithoutChecksums.Findings) != 1 {
+		t.Fatalf("expected one missing-checksum finding, got %#v", releaseWithoutChecksums.Findings)
+	}
+
+	releaseWithChecksums := scanDefaultRuleFixture(t, "release.yml", "jobs:\n  release:\n    steps:\n      - run: |\n          cd dist\n          sha256sum hermesscan-* > checksums.txt\n      - uses: softprops/action-gh-release@v2\n        with:\n          files: dist/*\n", "HMS0018")
+	if len(releaseWithChecksums.Findings) != 0 {
+		t.Fatalf("expected no missing-checksum finding when workflow generates checksums.txt, got %#v", releaseWithChecksums.Findings)
+	}
+
+	releaseWithPowerShellChecksums := scanDefaultRuleFixture(t, "release.yml", "jobs:\n  release:\n    steps:\n      - shell: pwsh\n        run: Get-FileHash -LiteralPath .\\dist\\hermesscan.exe -Algorithm SHA256\n      - uses: softprops/action-gh-release@v2\n", "HMS0018")
+	if len(releaseWithPowerShellChecksums.Findings) != 0 {
+		t.Fatalf("expected no missing-checksum finding when workflow uses Get-FileHash, got %#v", releaseWithPowerShellChecksums.Findings)
+	}
+}
+
 func scanDefaultRuleFixture(t *testing.T, filename string, content string, ruleID string) Result {
 	t.Helper()
 

@@ -21,6 +21,7 @@ Generated for HermesScan 0.10.0.
 | `HMS0015` | Medium | isolation | GitHub Actions self-hosted runner |
 | `HMS0016` | Medium | cache | GitHub Actions broad cache key |
 | `HMS0017` | Low | supply-chain | Release workflow without SBOM artifact |
+| `HMS0018` | Low | supply-chain | Release workflow without checksum manifest |
 
 ## HMS0001 - Sleep-based synchronization
 
@@ -362,5 +363,29 @@ Release workflows that publish binaries or checksums without an SBOM make it har
 
 ```text
 (?i)(\bsbom\b|spdx|cyclonedx|syft|anchore/sbom-action|\.cdx\.json|\.spdx(?:\.json)?)
+```
+
+## HMS0018 - Release workflow without checksum manifest
+
+**Severity:** Low
+
+**Category:** supply-chain
+
+**Tags:** `github-actions`, `release`, `checksum`
+
+**File types:** `yaml`
+
+Release workflows that publish binaries or release assets without checksum generation make it harder for consumers to verify downloads.
+
+**Recommendation:** Generate a checksum manifest such as checksums.txt with SHA-256 hashes and publish it with the release assets.
+
+```text
+(?i)(softprops/action-gh-release|gh\s+release\s+(?:create|upload)|upload-release-asset|release-binar(?:y|ies)|release assets?|dist/\*)
+```
+
+**Required file pattern:**
+
+```text
+(?i)(checksums?\.txt|sha256sum|shasum\s+-a\s*256|Get-FileHash|certutil\s+-hashfile|\.sha256\b)
 ```
 
