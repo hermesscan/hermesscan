@@ -320,5 +320,23 @@
     "requiredFilePattern": "(?i)(checksums?\\.txt|sha256sum|shasum\\s+-a\\s*256|Get-FileHash|certutil\\s+-hashfile|\\.sha256\\b)",
     "description": "Release workflows that publish binaries or release assets without checksum generation make it harder for consumers to verify downloads.",
     "recommendation": "Generate a checksum manifest such as checksums.txt with SHA-256 hashes and publish it with the release assets."
+  },
+  {
+    "id": "HMS0019",
+    "name": "Release workflow with write-all permissions",
+    "severity": "Medium",
+    "category": "supply-chain",
+    "tags": [
+      "github-actions",
+      "release",
+      "permissions"
+    ],
+    "fileTypes": [
+      "yaml"
+    ],
+    "pattern": "(?i)^\\s*permissions:\\s*write-all\\s*(?:#.*)?$",
+    "triggerFilePattern": "(?i)(softprops/action-gh-release|gh\\s+release\\s+(?:create|upload)|upload-release-asset|release-binar(?:y|ies)|release assets?|dist/\\*)",
+    "description": "Release workflows that publish assets with write-all permissions give the workflow token broader repository access than release publishing usually requires.",
+    "recommendation": "Replace write-all with explicit minimum permissions such as contents: write, actions: read, or security-events: write only when those capabilities are needed."
   }
 ]

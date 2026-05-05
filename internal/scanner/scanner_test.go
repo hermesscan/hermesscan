@@ -191,3 +191,43 @@ func TestScanCanEnableSpecificRules(t *testing.T) {
 		t.Fatalf("rules loaded = %d; want 1", result.RulesLoaded)
 	}
 }
+
+func TestScanRequiresTriggerFilePatternWhenConfigured(t *testing.T) {
+	root := t.TempDir()
+	path := filepath.Join(root, "ci.sh")
+	if err := os.WriteFile(path, []byte("sleep 30\n"), 0600); err != nil {
+		t.Fatalf("write fixture: %v", err)
+	}
+
+	loaded := []rules.Rule{
+		{
+			ID:                 "HMS0001",
+			Name:               "Sleep",
+			Severity:           "Medium",
+			FileTypes:          []string{"bash"},
+			Pattern:            `sleep\s+[0-9]+`,
+			TriggerFilePattern: `deploy`,
+			Description:        "test description",
+			Recommendation:     "test recommendation",
+		},
+	}
+
+	result, err := ScanWithOptions(root, loaded, DefaultOptions())
+	if err != nil {
+		t.Fatalf("scan failed: %v", err)
+	}
+	if len(result.Findings) != 0 {
+		t.Fatalf("findings = %d; want 0", len(result.Findings))
+	}
+
+	if err := os.WriteFile(path, []byte("# deploy\nsleep 30\n"), 0600); err != nil {
+		t.Fatalf("write fixture: %v", err)
+	}
+	result, err = ScanWithOptions(root, loaded, DefaultOptions())
+	if err != nil {
+		t.Fatalf("scan failed: %v", err)
+	}
+	if len(result.Findings) != 1 {
+		t.Fatalf("findings = %d; want 1", len(result.Findings))
+	}
+}

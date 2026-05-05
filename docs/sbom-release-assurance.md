@@ -156,20 +156,23 @@ This is an advisory rule. It does not prove a project lacks an SBOM across all a
 
 `HMS0018` flags GitHub release workflows that appear to publish release assets without checksum generation such as `checksums.txt`, `sha256sum`, `shasum -a 256`, or `Get-FileHash`.
 
+`HMS0019` flags GitHub release workflows that publish assets while using `permissions: write-all` instead of scoped permissions.
+
 Existing supply-chain rules also support release assurance:
 
 - `HMS0009` flags mutable GitHub Action references such as `@main`.
 - `HMS0013` flags risky `pull_request_target` usage.
-- `HMS0014` flags broad `permissions: write-all`.
+- `HMS0014` flags broad `permissions: write-all` across GitHub Actions workflows.
 - `HMS0016` flags overly broad cache keys that can affect reproducible release jobs.
 
 ## Adoption guidance
 
-Start with `HMS0017` and `HMS0018` as advisory:
+Start with `HMS0017`, `HMS0018`, and `HMS0019` as advisory:
 
 ```powershell
 .\hermesscan.exe scan . --rule HMS0017 --summary --no-fail
 .\hermesscan.exe scan . --rule HMS0018 --summary --no-fail
+.\hermesscan.exe scan . --rule HMS0019 --summary --no-fail
 ```
 
 After the release workflow publishes an SBOM and checksum manifest together, include both rules in regular supply-chain scans:

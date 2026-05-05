@@ -22,6 +22,7 @@ Generated for HermesScan 0.10.0.
 | `HMS0016` | Medium | cache | GitHub Actions broad cache key |
 | `HMS0017` | Low | supply-chain | Release workflow without SBOM artifact |
 | `HMS0018` | Low | supply-chain | Release workflow without checksum manifest |
+| `HMS0019` | Medium | supply-chain | Release workflow with write-all permissions |
 
 ## HMS0001 - Sleep-based synchronization
 
@@ -387,5 +388,29 @@ Release workflows that publish binaries or release assets without checksum gener
 
 ```text
 (?i)(checksums?\.txt|sha256sum|shasum\s+-a\s*256|Get-FileHash|certutil\s+-hashfile|\.sha256\b)
+```
+
+## HMS0019 - Release workflow with write-all permissions
+
+**Severity:** Medium
+
+**Category:** supply-chain
+
+**Tags:** `github-actions`, `release`, `permissions`
+
+**File types:** `yaml`
+
+Release workflows that publish assets with write-all permissions give the workflow token broader repository access than release publishing usually requires.
+
+**Recommendation:** Replace write-all with explicit minimum permissions such as contents: write, actions: read, or security-events: write only when those capabilities are needed.
+
+```text
+(?i)^\s*permissions:\s*write-all\s*(?:#.*)?$
+```
+
+**Trigger file pattern:**
+
+```text
+(?i)(softprops/action-gh-release|gh\s+release\s+(?:create|upload)|upload-release-asset|release-binar(?:y|ies)|release assets?|dist/\*)
 ```
 

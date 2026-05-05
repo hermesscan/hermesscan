@@ -18,6 +18,7 @@ type compiledRule struct {
 	regex              *regexp.Regexp
 	excludeRegex       *regexp.Regexp
 	contextBeforeRegex *regexp.Regexp
+	triggerFileRegex   *regexp.Regexp
 	requiredFileRegex  *regexp.Regexp
 }
 
@@ -104,13 +105,20 @@ func compileRules(loadedRules []rules.Rule, options Options) ([]compiledRule, er
 			}
 		}
 		var requiredFileRe *regexp.Regexp
+		var triggerFileRe *regexp.Regexp
+		if strings.TrimSpace(rule.TriggerFilePattern) != "" {
+			triggerFileRe, err = regexp.Compile(rule.TriggerFilePattern)
+			if err != nil {
+				return nil, fmt.Errorf("compile rule %q trigger-file pattern: %w", rule.ID, err)
+			}
+		}
 		if strings.TrimSpace(rule.RequiredFilePattern) != "" {
 			requiredFileRe, err = regexp.Compile(rule.RequiredFilePattern)
 			if err != nil {
 				return nil, fmt.Errorf("compile rule %q required-file pattern: %w", rule.ID, err)
 			}
 		}
-		compiled = append(compiled, compiledRule{rule: rule, regex: re, excludeRegex: excludeRe, contextBeforeRegex: contextBeforeRe, requiredFileRegex: requiredFileRe})
+		compiled = append(compiled, compiledRule{rule: rule, regex: re, excludeRegex: excludeRe, contextBeforeRegex: contextBeforeRe, triggerFileRegex: triggerFileRe, requiredFileRegex: requiredFileRe})
 	}
 	return compiled, nil
 }
@@ -156,6 +164,10 @@ func scanFile(candidate files.Candidate, compiled []compiledRule, options Option
 
 			location := item.regex.FindStringIndex(line)
 			if location == nil {
+				continue
+			}
+
+			if item.triggerFileRegex != nil && !item.triggerFileRegex.MatchString(content) {
 				continue
 			}
 

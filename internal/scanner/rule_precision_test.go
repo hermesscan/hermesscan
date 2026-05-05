@@ -157,6 +157,23 @@ func TestDefaultRulePrecisionReleaseWorkflowRequiresChecksums(t *testing.T) {
 	}
 }
 
+func TestDefaultRulePrecisionReleaseWorkflowAvoidsWriteAllPermissions(t *testing.T) {
+	releaseWithWriteAll := scanDefaultRuleFixture(t, "release.yml", "permissions: write-all\njobs:\n  release:\n    steps:\n      - uses: softprops/action-gh-release@v2\n        with:\n          files: dist/*\n", "HMS0019")
+	if len(releaseWithWriteAll.Findings) != 1 {
+		t.Fatalf("expected one release write-all finding, got %#v", releaseWithWriteAll.Findings)
+	}
+
+	releaseWithScopedPermissions := scanDefaultRuleFixture(t, "release.yml", "permissions:\n  contents: write\n  actions: read\njobs:\n  release:\n    steps:\n      - uses: softprops/action-gh-release@v2\n        with:\n          files: dist/*\n", "HMS0019")
+	if len(releaseWithScopedPermissions.Findings) != 0 {
+		t.Fatalf("expected no release write-all finding with scoped permissions, got %#v", releaseWithScopedPermissions.Findings)
+	}
+
+	nonReleaseWithWriteAll := scanDefaultRuleFixture(t, "ci.yml", "permissions: write-all\njobs:\n  test:\n    steps:\n      - run: go test ./...\n", "HMS0019")
+	if len(nonReleaseWithWriteAll.Findings) != 0 {
+		t.Fatalf("expected no HMS0019 finding for non-release write-all workflow, got %#v", nonReleaseWithWriteAll.Findings)
+	}
+}
+
 func scanDefaultRuleFixture(t *testing.T, filename string, content string, ruleID string) Result {
 	t.Helper()
 

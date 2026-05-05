@@ -678,6 +678,14 @@ func writeRulesMarkdown(writer io.Writer, loadedRules []rules.Rule) {
 			fmt.Fprintln(writer, "```")
 			fmt.Fprintln(writer)
 		}
+		if rule.TriggerFilePattern != "" {
+			fmt.Fprintln(writer, "**Trigger file pattern:**")
+			fmt.Fprintln(writer)
+			fmt.Fprintln(writer, "```text")
+			fmt.Fprintln(writer, rule.TriggerFilePattern)
+			fmt.Fprintln(writer, "```")
+			fmt.Fprintln(writer)
+		}
 		if rule.RequiredFilePattern != "" {
 			fmt.Fprintln(writer, "**Required file pattern:**")
 			fmt.Fprintln(writer)
