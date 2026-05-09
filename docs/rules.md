@@ -23,6 +23,7 @@ Generated for HermesScan 0.10.0.
 | `HMS0017` | Low | supply-chain | Release workflow without SBOM artifact |
 | `HMS0018` | Low | supply-chain | Release workflow without checksum manifest |
 | `HMS0019` | Medium | supply-chain | Release workflow with write-all permissions |
+| `HMS0020` | Medium | supply-chain | HermesScan download without checksum verification |
 
 ## HMS0001 - Sleep-based synchronization
 
@@ -412,5 +413,29 @@ Release workflows that publish assets with write-all permissions give the workfl
 
 ```text
 (?i)(softprops/action-gh-release|gh\s+release\s+(?:create|upload)|upload-release-asset|release-binar(?:y|ies)|release assets?|dist/\*)
+```
+
+## HMS0020 - HermesScan download without checksum verification
+
+**Severity:** Medium
+
+**Category:** supply-chain
+
+**Tags:** `download`, `checksum`, `install`
+
+**File types:** `bash`, `powershell`, `yaml`
+
+Install scripts and CI snippets that download HermesScan release binaries without checksum verification make it harder to detect a corrupted or tampered download.
+
+**Recommendation:** Download checksums.txt and verify the binary with SHA-256 tooling such as sha256sum -c, shasum -a 256, Get-FileHash, or a published .sha256 file before installing it.
+
+```text
+(?i)(curl|wget|Invoke-WebRequest|iwr)[^\r\n]*(github\.com/hermesscan/hermesscan/releases/(?:download|latest/download)[^\r\n]*hermesscan-(?:windows|linux|darwin)-(?:amd64|arm64)(?:\.exe)?)
+```
+
+**Required file pattern:**
+
+```text
+(?i)(checksums?\.txt|sha256sum\s+-c|shasum\s+-a\s*256|Get-FileHash|certutil\s+-hashfile|\.sha256\b)
 ```
 

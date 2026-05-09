@@ -338,5 +338,25 @@
     "triggerFilePattern": "(?i)(softprops/action-gh-release|gh\\s+release\\s+(?:create|upload)|upload-release-asset|release-binar(?:y|ies)|release assets?|dist/\\*)",
     "description": "Release workflows that publish assets with write-all permissions give the workflow token broader repository access than release publishing usually requires.",
     "recommendation": "Replace write-all with explicit minimum permissions such as contents: write, actions: read, or security-events: write only when those capabilities are needed."
+  },
+  {
+    "id": "HMS0020",
+    "name": "HermesScan download without checksum verification",
+    "severity": "Medium",
+    "category": "supply-chain",
+    "tags": [
+      "download",
+      "checksum",
+      "install"
+    ],
+    "fileTypes": [
+      "bash",
+      "powershell",
+      "yaml"
+    ],
+    "pattern": "(?i)(curl|wget|Invoke-WebRequest|iwr)[^\\r\\n]*(github\\.com/hermesscan/hermesscan/releases/(?:download|latest/download)[^\\r\\n]*hermesscan-(?:windows|linux|darwin)-(?:amd64|arm64)(?:\\.exe)?)",
+    "requiredFilePattern": "(?i)(checksums?\\.txt|sha256sum\\s+-c|shasum\\s+-a\\s*256|Get-FileHash|certutil\\s+-hashfile|\\.sha256\\b)",
+    "description": "Install scripts and CI snippets that download HermesScan release binaries without checksum verification make it harder to detect a corrupted or tampered download.",
+    "recommendation": "Download checksums.txt and verify the binary with SHA-256 tooling such as sha256sum -c, shasum -a 256, Get-FileHash, or a published .sha256 file before installing it."
   }
 ]

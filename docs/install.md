@@ -82,6 +82,7 @@ Use `hermesscan-darwin-amd64` for Intel Macs and `hermesscan-darwin-arm64` for A
 ## Checksums
 
 Release artifacts include `checksums.txt`. After downloading a binary, verify it against the published checksum.
+HermesScan flags direct HermesScan release binary downloads without checksum verification in Bash, PowerShell, and workflow files with `HMS0020`.
 
 Linux:
 

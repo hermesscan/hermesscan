@@ -48,7 +48,7 @@ Avoid using context windows as a substitute for parsing a full file. If a rule n
 
 Use `triggerFilePattern` when a line-level risk is meaningful only if another signal appears anywhere in the same file. For example, `HMS0019` flags `permissions: write-all` only when the workflow also appears to publish release assets.
 
-Use `requiredFilePattern` for conservative absence checks where a local trigger is meaningful only if another file-level signal is missing. For example, `HMS0017` flags release workflows that publish binaries, checksums, or release assets when the same workflow does not mention an SBOM, SPDX, CycloneDX, or Syft output. `HMS0018` uses the same pattern to flag release workflows that publish assets without checksum generation. Keep these rules advisory unless the absence signal is very specific.
+Use `requiredFilePattern` for conservative absence checks where a local trigger is meaningful only if another file-level signal is missing. For example, `HMS0017` flags release workflows that publish binaries, checksums, or release assets when the same workflow does not mention an SBOM, SPDX, CycloneDX, or Syft output. `HMS0018` uses the same pattern to flag release workflows that publish assets without checksum generation, and `HMS0020` flags HermesScan binary downloads without checksum verification. Keep these rules advisory unless the absence signal is very specific.
 
 ## Severity
 

@@ -8,6 +8,7 @@
 - Added CI-covered contract tests for the local Scoop manifest shape, release URLs, and hashes.
 - Added `HMS0018` to flag release workflows that publish assets without checksum generation.
 - Added `triggerFilePattern` rule support and `HMS0019` to flag release workflows that publish assets with `permissions: write-all`.
+- Added `HMS0020` to flag HermesScan release binary downloads that do not verify checksums.
 
 ## 0.9.0 - 2026-05-04
 

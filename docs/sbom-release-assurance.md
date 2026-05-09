@@ -158,6 +158,8 @@ This is an advisory rule. It does not prove a project lacks an SBOM across all a
 
 `HMS0019` flags GitHub release workflows that publish assets while using `permissions: write-all` instead of scoped permissions.
 
+`HMS0020` flags Bash, PowerShell, and workflow snippets that download HermesScan release binaries without checksum verification.
+
 Existing supply-chain rules also support release assurance:
 
 - `HMS0009` flags mutable GitHub Action references such as `@main`.
@@ -167,12 +169,13 @@ Existing supply-chain rules also support release assurance:
 
 ## Adoption guidance
 
-Start with `HMS0017`, `HMS0018`, and `HMS0019` as advisory:
+Start with `HMS0017`, `HMS0018`, `HMS0019`, and `HMS0020` as advisory:
 
 ```powershell
 .\hermesscan.exe scan . --rule HMS0017 --summary --no-fail
 .\hermesscan.exe scan . --rule HMS0018 --summary --no-fail
 .\hermesscan.exe scan . --rule HMS0019 --summary --no-fail
+.\hermesscan.exe scan . --rule HMS0020 --summary --no-fail
 ```
 
 After the release workflow publishes an SBOM and checksum manifest together, include both rules in regular supply-chain scans:

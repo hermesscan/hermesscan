@@ -174,6 +174,28 @@ func TestDefaultRulePrecisionReleaseWorkflowAvoidsWriteAllPermissions(t *testing
 	}
 }
 
+func TestDefaultRulePrecisionHermesScanDownloadRequiresChecksumVerification(t *testing.T) {
+	bashDownloadWithoutChecksum := scanDefaultRuleFixture(t, "install.sh", "curl -fsSL -o hermesscan-linux-amd64 \"https://github.com/hermesscan/hermesscan/releases/download/v0.9.0/hermesscan-linux-amd64\"\n", "HMS0020")
+	if len(bashDownloadWithoutChecksum.Findings) != 1 {
+		t.Fatalf("expected one missing-download-checksum finding, got %#v", bashDownloadWithoutChecksum.Findings)
+	}
+
+	bashDownloadWithChecksum := scanDefaultRuleFixture(t, "install.sh", "VERSION=0.9.0\nASSET=hermesscan-linux-amd64\nBASE_URL=\"https://github.com/hermesscan/hermesscan/releases/download/v${VERSION}\"\ncurl -fsSLO \"${BASE_URL}/${ASSET}\"\ncurl -fsSLO \"${BASE_URL}/checksums.txt\"\ngrep \"  ${ASSET}$\" checksums.txt | sha256sum -c -\n", "HMS0020")
+	if len(bashDownloadWithChecksum.Findings) != 0 {
+		t.Fatalf("expected no missing-download-checksum finding with sha256sum -c verification, got %#v", bashDownloadWithChecksum.Findings)
+	}
+
+	powerShellDownloadWithoutChecksum := scanDefaultRuleFixture(t, "install.ps1", "Invoke-WebRequest -Uri \"https://github.com/hermesscan/hermesscan/releases/download/v0.9.0/hermesscan-windows-amd64.exe\" -OutFile .\\hermesscan.exe\n", "HMS0020")
+	if len(powerShellDownloadWithoutChecksum.Findings) != 1 {
+		t.Fatalf("expected one missing-download-checksum finding for PowerShell download, got %#v", powerShellDownloadWithoutChecksum.Findings)
+	}
+
+	powerShellDownloadWithChecksum := scanDefaultRuleFixture(t, "install.ps1", "$Asset = 'hermesscan-windows-amd64.exe'\n$BaseUri = 'https://github.com/hermesscan/hermesscan/releases/download/v0.9.0'\nInvoke-WebRequest -Uri \"$BaseUri/$Asset\" -OutFile \".\\$Asset\"\nInvoke-WebRequest -Uri \"$BaseUri/checksums.txt\" -OutFile .\\checksums.txt\n$actual = (Get-FileHash -LiteralPath \".\\$Asset\" -Algorithm SHA256).Hash\n", "HMS0020")
+	if len(powerShellDownloadWithChecksum.Findings) != 0 {
+		t.Fatalf("expected no missing-download-checksum finding with Get-FileHash verification, got %#v", powerShellDownloadWithChecksum.Findings)
+	}
+}
+
 func scanDefaultRuleFixture(t *testing.T, filename string, content string, ruleID string) Result {
 	t.Helper()
 
