@@ -15,13 +15,27 @@ Phase 2 turns the Phase 1G.1 prototype into a more practical repository scanner.
 
 HermesScan automatically looks for `.hermesscan.json` under the scan root.
 
+Create a starter config with one of the adoption profiles:
+
+```bash
+hermesscan init --profile minimal
+hermesscan init --profile ci
+hermesscan init --profile supply-chain
+```
+
+The default `ci` profile keeps the normal high-severity gate. The `minimal` profile is advisory by default, and the `supply-chain` profile filters to the `supply-chain` rule category.
+
 Supported settings:
 
 | Setting | Purpose |
 |---|---|
 | `rules` | Relative or absolute path to the JSON rule catalog |
+| `include` | Glob-like file patterns to include in scanning |
 | `exclude` | Glob-like file patterns to exclude from scanning |
+| `enabledRules` | Rule IDs to include |
 | `disabledRules` | Rule IDs to skip entirely |
+| `categories` | Rule categories to include |
+| `tags` | Rule tags to include |
 | `severityOverrides` | Per-rule severity remapping |
 | `failOn` | Default fail threshold |
 | `minSeverity` | Default report filtering threshold |

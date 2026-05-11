@@ -410,6 +410,7 @@ func runInit(args []string) int {
 	set := flag.NewFlagSet("init", flag.ContinueOnError)
 	set.SetOutput(io.Discard)
 	path := set.String("path", ".hermesscan.json", "config file path")
+	profile := set.String("profile", config.ProfileCI, "starter profile: minimal, ci, supply-chain")
 	overwrite := set.Bool("force", false, "overwrite an existing config")
 	if err := set.Parse(args); err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
@@ -419,11 +420,16 @@ func runInit(args []string) int {
 		fmt.Fprintf(os.Stderr, "error: unexpected argument %q\n", set.Args()[0])
 		return 2
 	}
-	if err := config.WriteDefault(*path, *overwrite); err != nil {
+	normalizedProfile, err := config.NormalizeProfile(*profile)
+	if err != nil {
 		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		return 2
 	}
-	fmt.Fprintf(os.Stdout, "Created %s\n", *path)
+	if err := config.WriteProfile(*path, *overwrite, normalizedProfile); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		return 2
+	}
+	fmt.Fprintf(os.Stdout, "Created %s using %s profile\n", *path, normalizedProfile)
 	return 0
 }
 
@@ -706,7 +712,7 @@ func printUsage(writer io.Writer) {
 	fmt.Fprintf(writer, "HermesScan %s\n\n", version)
 	fmt.Fprintf(writer, "Usage:\n")
 	fmt.Fprintf(writer, "  hermesscan scan [path] [--config .hermesscan.json] [--rules rules/hermes.rules.json] [--format console|summary|markdown|json|sarif] [--output file] [--fail-on high] [--no-fail] [--baseline file] [--create-baseline file] [--min-severity medium] [--include pattern] [--exclude pattern] [--category name] [--tag name] [--rule HMS0001] [--changed-only] [--changed-base ref] [--github-annotations] [--summary] [--quiet] [--no-color]\n")
-	fmt.Fprintf(writer, "  hermesscan init [--path .hermesscan.json] [--force]\n")
+	fmt.Fprintf(writer, "  hermesscan init [--path .hermesscan.json] [--profile minimal|ci|supply-chain] [--force]\n")
 	fmt.Fprintf(writer, "  hermesscan rules list [--rules rules/hermes.rules.json]\n")
 	fmt.Fprintf(writer, "  hermesscan rules show RULE_ID [--rules rules/hermes.rules.json]\n")
 	fmt.Fprintf(writer, "  hermesscan rules docs [--rules rules/hermes.rules.json] [--output docs/rules.md]\n")

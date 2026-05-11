@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 )
 
@@ -72,6 +73,31 @@ func TestParseScanOptionsRuleFilter(t *testing.T) {
 	}
 	if len(options.rule) != 2 || options.rule[0] != "HMS0001" || options.rule[1] != "HMS0010" {
 		t.Fatalf("unexpected rule values: %#v", options.rule)
+	}
+}
+
+func TestRunInitRejectsUnknownProfile(t *testing.T) {
+	if code := runInit([]string{"--profile", "strict"}); code != 2 {
+		t.Fatalf("runInit exit code = %d; want 2", code)
+	}
+}
+
+func TestRunInitWritesSelectedProfile(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, ".hermesscan.json")
+
+	if code := runInit([]string{"--path", path, "--profile", "supply-chain"}); code != 0 {
+		t.Fatalf("runInit exit code = %d; want 0", code)
+	}
+
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatalf("read config: %v", err)
+	}
+	if !strings.Contains(string(data), `"categories": [
+    "supply-chain"
+  ]`) {
+		t.Fatalf("expected supply-chain category in config:\n%s", string(data))
 	}
 }
 

@@ -5,6 +5,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
+)
+
+const (
+	ProfileMinimal     = "minimal"
+	ProfileCI          = "ci"
+	ProfileSupplyChain = "supply-chain"
 )
 
 // Config describes optional repository-level HermesScan settings.
@@ -24,8 +31,13 @@ type Config struct {
 
 // Default returns a conservative starter configuration.
 func Default() Config {
+	return Profile(ProfileCI)
+}
+
+// Profile returns a starter configuration for a named adoption profile.
+func Profile(name string) Config {
 	enabled := true
-	return Config{
+	cfg := Config{
 		Rules: "",
 		Exclude: []string{
 			"dist/**",
@@ -47,6 +59,39 @@ func Default() Config {
 		MinSeverity:         "",
 		SuppressionsEnabled: &enabled,
 	}
+
+	switch normalizeProfileName(name) {
+	case ProfileMinimal:
+		cfg.FailOn = ""
+	case ProfileSupplyChain:
+		cfg.Categories = []string{"supply-chain"}
+	}
+
+	return cfg
+}
+
+// SupportedProfiles returns the accepted init profile names.
+func SupportedProfiles() []string {
+	return []string{ProfileMinimal, ProfileCI, ProfileSupplyChain}
+}
+
+// NormalizeProfile returns the canonical profile name or an error.
+func NormalizeProfile(name string) (string, error) {
+	normalized := normalizeProfileName(name)
+	for _, profile := range SupportedProfiles() {
+		if normalized == profile {
+			return normalized, nil
+		}
+	}
+	return "", fmt.Errorf("unsupported profile %q; expected one of: %s", name, strings.Join(SupportedProfiles(), ", "))
+}
+
+func normalizeProfileName(name string) string {
+	name = strings.TrimSpace(strings.ToLower(name))
+	if name == "" {
+		return ProfileCI
+	}
+	return name
 }
 
 // Load reads a JSON configuration file.
@@ -76,8 +121,17 @@ func FindDefault(root string) string {
 
 // WriteDefault writes a starter configuration to path.
 func WriteDefault(path string, overwrite bool) error {
+	return WriteProfile(path, overwrite, ProfileCI)
+}
+
+// WriteProfile writes a starter configuration profile to path.
+func WriteProfile(path string, overwrite bool, profile string) error {
 	if path == "" {
 		return fmt.Errorf("config path is required")
+	}
+	profile, err := NormalizeProfile(profile)
+	if err != nil {
+		return err
 	}
 	if !overwrite {
 		if _, err := os.Stat(path); err == nil {
@@ -87,9 +141,9 @@ func WriteDefault(path string, overwrite bool) error {
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		return fmt.Errorf("create config directory: %w", err)
 	}
-	data, err := json.MarshalIndent(Default(), "", "  ")
+	data, err := json.MarshalIndent(Profile(profile), "", "  ")
 	if err != nil {
-		return fmt.Errorf("serialize default config: %w", err)
+		return fmt.Errorf("serialize %s config: %w", profile, err)
 	}
 	data = append(data, '\n')
 	if err := os.WriteFile(path, data, 0644); err != nil {

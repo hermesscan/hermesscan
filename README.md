@@ -88,7 +88,7 @@ hermesscan scan .
 
 ```text
 hermesscan scan [path]
-hermesscan init
+hermesscan init [--profile minimal|ci|supply-chain]
 hermesscan rules list
 hermesscan rules show RULE_ID
 hermesscan rules docs [--output docs/rules.md]
@@ -255,12 +255,27 @@ Create a starter config:
 .\hermesscan.exe init
 ```
 
+Choose an adoption profile when you want a narrower starting point:
+
+```powershell
+.\hermesscan.exe init --profile minimal
+.\hermesscan.exe init --profile ci
+.\hermesscan.exe init --profile supply-chain
+```
+
+Profiles:
+
+| Profile | Use case |
+|---|---|
+| `minimal` | Advisory local scans. It enables common excludes and suppressions, but does not configure a default fail threshold. |
+| `ci` | Default CI adoption. It enables common excludes, suppressions, and a `high` fail threshold. |
+| `supply-chain` | CI adoption focused on supply-chain rules by setting the `supply-chain` category filter and a `high` fail threshold. |
+
 Example `.hermesscan.json`:
 
 ```json
 {
   "rules": "",
-  "include": [],
   "exclude": [
     "dist/**",
     "build/**",
@@ -271,15 +286,7 @@ Example `.hermesscan.json`:
     "tmp/**",
     ".git/**"
   ],
-  "enabledRules": [],
-  "disabledRules": [],
-  "categories": [],
-  "tags": [],
-  "severityOverrides": {
-    "HMS0010": "Low"
-  },
   "failOn": "high",
-  "minSeverity": "",
   "suppressionsEnabled": true
 }
 ```
