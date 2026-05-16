@@ -245,7 +245,7 @@ HermesScan is rule-based and may flag legitimate patterns. If you find a false p
 - a minimal code example,
 - why the pattern is safe in your case.
 
-Use inline suppressions or a baseline only when the finding has been reviewed and accepted.
+Use inline suppressions or a baseline only when the finding has been reviewed and accepted. Prefer inline suppressions for intentional local exceptions; use a baseline for reviewed repository-wide debt that should shrink over time.
 
 ## Configuration
 
@@ -305,6 +305,20 @@ Override config failure behavior:
 
 ## Baseline adoption workflow
 
+Start advisory:
+
+```powershell
+.\hermesscan.exe init --profile minimal
+.\hermesscan.exe scan . --summary --no-fail
+```
+
+Use inline suppressions for reviewed local exceptions:
+
+```bash
+# hermesscan:disable-next-line HMS0001 -- fixture delay is intentional
+sleep 30
+```
+
 Create a baseline from current findings:
 
 ```powershell
@@ -318,6 +332,8 @@ Use the baseline to fail only on new findings:
 ```
 
 The baseline uses finding fingerprints based on rule id, normalized file path, line number, and matched text. If the risky line moves or changes, HermesScan treats it as a new finding that should be reviewed again.
+
+For the full adoption sequence, including reviewed baseline creation, CI gating, and intentional baseline reduction, see [Baseline adoption guide](docs/baseline-adoption.md).
 
 ## Suppressions
 

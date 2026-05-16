@@ -2,13 +2,29 @@
 
 Baselines let an existing repository adopt HermesScan without fixing every current finding before enabling a CI gate.
 
+## Start with a profile
+
+Use a profile that matches the first adoption step:
+
+| Profile | Use it when |
+|---|---|
+| `minimal` | You want advisory local scans before enabling a gate. |
+| `ci` | You are ready to gate on high findings across the full catalog. |
+| `supply-chain` | You want to start with supply-chain rules only. |
+
+```powershell
+.\hermesscan.exe init --profile minimal
+```
+
+Move to `ci` or `supply-chain` when the team is ready to enforce a gate.
+
 ## When to use a baseline
 
 Use a baseline when a repository already has known findings and you want to block only new findings.
 
 Do not use a baseline as a permanent ignore list. Treat it as technical debt that should shrink over time.
 
-## Create a baseline
+## 1. Run an advisory scan
 
 Start with an advisory scan so the team can review the current findings without failing CI:
 
@@ -21,6 +37,39 @@ For a reviewable report:
 ```powershell
 .\hermesscan.exe scan . --format markdown --output .\reports\hermes-scan.md --no-fail
 ```
+
+For an advisory-only config, use the `minimal` profile and keep CI non-blocking while findings are reviewed.
+
+## 2. Review findings
+
+Triage findings before creating a baseline:
+
+- Fix findings that are real and practical to address now.
+- Use inline suppressions for intentional, local exceptions that should stay next to the code.
+- Use a baseline only for reviewed findings that are accepted temporarily across the repository.
+
+## 3. Prefer inline suppressions for local exceptions
+
+Use inline suppressions when a finding is intentionally safe at a specific line or in a specific file and the reason belongs with the code:
+
+```bash
+# hermesscan:disable-next-line HMS0001 -- fixture delay is intentional
+sleep 30
+```
+
+```bash
+sleep 30 # hermesscan:disable-line HMS0001 -- fixture delay is intentional
+```
+
+Use file-level suppression only when the whole file is intentionally outside the rule's normal expectation:
+
+```bash
+# hermesscan:disable-file HMS0001 -- dedicated fixture file
+```
+
+Prefer a baseline instead when the repository has many reviewed existing findings that should be paid down over time rather than annotated one by one.
+
+## 4. Create a reviewed baseline
 
 After the team reviews current findings, create the baseline:
 
@@ -38,7 +87,7 @@ Commit the baseline if the team agrees that the current findings are accepted te
 
 Review the generated file before committing it. The baseline should contain findings the team has explicitly accepted for now, not findings that should be fixed before the gate is enabled.
 
-## Use a baseline in CI
+## 5. Use a baseline in CI
 
 ```powershell
 .\hermesscan.exe scan . --baseline .\.hermesscan-baseline.json --fail-on high
@@ -80,7 +129,7 @@ Then switch to the baseline gate:
 
 Keep reporting and gating separate when you also upload SARIF or artifacts. Generate reports with `no-fail: 'true'`, then run a final summary gate with `baseline` and `fail-on`.
 
-## Refresh a baseline
+## 6. Reduce the baseline
 
 Only refresh the baseline intentionally after reviewing findings.
 
@@ -107,10 +156,10 @@ Do not refresh the baseline just to make a new finding disappear. Review the fin
 
 ## Recommended adoption flow
 
-1. Run HermesScan in advisory mode.
+1. Initialize `minimal` for advisory scans, or `supply-chain` if the team wants a narrower first scope.
 2. Review high-severity findings first.
-3. Suppress intentional findings inline with comments.
-4. Create a baseline for remaining accepted findings.
-5. Enable `--fail-on high` in CI.
+3. Fix real issues and suppress intentional local exceptions inline with reasons.
+4. Create a baseline only for remaining reviewed findings accepted temporarily.
+5. Move to `ci` or `supply-chain` gating with `--fail-on high`.
 6. Lower the gate to `--fail-on medium` only after high findings are handled.
-7. Reduce the baseline over time.
+7. Reduce the baseline over time instead of refreshing it to hide new findings.
