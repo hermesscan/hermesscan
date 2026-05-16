@@ -25,6 +25,8 @@ hermesscan init --profile supply-chain
 
 The default `ci` profile keeps the normal high-severity gate. The `minimal` profile is advisory by default, and the `supply-chain` profile filters to the `supply-chain` rule category.
 
+The configuration schema is published at `schemas/hermesscan-config.schema.json`.
+
 Supported settings:
 
 | Setting | Purpose |

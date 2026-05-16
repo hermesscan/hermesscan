@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hermesscan/hermesscan/schemas/hermesscan-rule-catalog.schema.json",
+  "title": "HermesScan rule catalog",
+  "type": "array",
+  "minItems": 1,
+  "items": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "id",
+      "name",
+      "severity",
+      "category",
+      "tags",
+      "fileTypes",
+      "pattern",
+      "description",
+      "recommendation"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^HMS[0-9]{4}$"
+      },
+      "name": {
+        "type": "string",
+        "minLength": 1
+      },
+      "severity": {
+        "$ref": "#/$defs/severity"
+      },
+      "category": {
+        "type": "string",
+        "minLength": 1
+      },
+      "tags": {
+        "$ref": "#/$defs/nonEmptyStringArray"
+      },
+      "fileTypes": {
+        "$ref": "#/$defs/nonEmptyStringArray"
+      },
+      "pattern": {
+        "type": "string",
+        "minLength": 1
+      },
+      "excludePattern": {
+        "type": "string",
+        "minLength": 1
+      },
+      "contextBeforePattern": {
+        "type": "string",
+        "minLength": 1
+      },
+      "contextBeforeLines": {
+        "type": "integer",
+        "minimum": 1
+      },
+      "triggerFilePattern": {
+        "type": "string",
+        "minLength": 1
+      },
+      "requiredFilePattern": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": {
+        "type": "string",
+        "minLength": 1
+      },
+      "recommendation": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "dependentRequired": {
+      "contextBeforePattern": [
+        "contextBeforeLines"
+      ]
+    }
+  },
+  "$defs": {
+    "severity": {
+      "type": "string",
+      "enum": [
+        "Info",
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+      ]
+    },
+    "nonEmptyStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    }
+  }
+}

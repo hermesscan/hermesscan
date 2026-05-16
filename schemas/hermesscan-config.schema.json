@@ -1,0 +1,85 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/hermesscan/hermesscan/schemas/hermesscan-config.schema.json",
+  "title": "HermesScan configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "rules": {
+      "type": "string"
+    },
+    "exclude": {
+      "$ref": "#/$defs/stringArray"
+    },
+    "include": {
+      "$ref": "#/$defs/stringArray"
+    },
+    "enabledRules": {
+      "$ref": "#/$defs/ruleIDArray"
+    },
+    "disabledRules": {
+      "$ref": "#/$defs/ruleIDArray"
+    },
+    "categories": {
+      "$ref": "#/$defs/stringArray"
+    },
+    "tags": {
+      "$ref": "#/$defs/stringArray"
+    },
+    "severityOverrides": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/$defs/severity"
+      }
+    },
+    "failOn": {
+      "$ref": "#/$defs/threshold"
+    },
+    "minSeverity": {
+      "$ref": "#/$defs/threshold"
+    },
+    "suppressionsEnabled": {
+      "type": "boolean"
+    }
+  },
+  "$defs": {
+    "stringArray": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "ruleIDArray": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^HMS[0-9]{4}$"
+      },
+      "uniqueItems": true
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "Info",
+        "Low",
+        "Medium",
+        "High",
+        "Critical"
+      ]
+    },
+    "threshold": {
+      "type": "string",
+      "enum": [
+        "",
+        "none",
+        "info",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
+    }
+  }
+}

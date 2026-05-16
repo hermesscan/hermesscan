@@ -297,6 +297,11 @@ Run with config. An empty `rules` value means HermesScan uses the local `rules/h
 .\hermesscan.exe scan . --config .hermesscan.json
 ```
 
+JSON schemas for editor integration and external validation are available at:
+
+- `schemas/hermesscan-config.schema.json`
+- `schemas/hermesscan-rule-catalog.schema.json`
+
 Override config failure behavior:
 
 ```powershell

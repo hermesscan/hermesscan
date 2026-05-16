@@ -11,6 +11,7 @@
 - Added `HMS0020` to flag HermesScan release binary downloads that do not verify checksums.
 - Added `hermesscan init --profile minimal|ci|supply-chain` for advisory, CI, and supply-chain starter configurations.
 - Expanded adoption guidance to separate advisory scans, inline suppressions, reviewed baselines, CI gates, and baseline reduction.
+- Added JSON schemas for `.hermesscan.json` and rule catalogs, plus tests that keep shipped artifacts aligned with both schemas.
 
 ## 0.9.0 - 2026-05-04
 

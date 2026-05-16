@@ -78,6 +78,8 @@ When adding or changing a rule:
 
 The test suite includes a catalog sync check, so rule changes fail if the repository catalog and embedded default catalog drift.
 
+The repository also ships `schemas/hermesscan-rule-catalog.schema.json` for editor integration and external JSON Schema validation. Keep `hermesscan rules validate` in the workflow because it also verifies regex compilation and catalog-specific constraints.
+
 ## Example rule
 
 ```json
