@@ -35,12 +35,13 @@
       "args": [
         "-w",
         "."
-      ]
+      ],
+      "modifiesFiles": true,
+      "warning": "This command can modify Go source files in place via gofmt -w."
     }
   },
   "artifacts": [
-    "./dist",
-    "./bin"
+    "./dist"
   ],
   "fileSystem": {
     "followSymlinks": true,
@@ -63,6 +64,10 @@
   "powershell": {
     "captureFormattedOutput": false,
     "outputWidth": 160
+  },
+  "versioning": {
+    "source": "git-tag",
+    "prefix": "v"
   },
   "release": {
     "requireCleanGit": true,
