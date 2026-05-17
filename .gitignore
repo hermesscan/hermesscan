@@ -9,3 +9,5 @@
 *.sarif
 *.log
 .DS_Store
+.reporogue/state.json
+.reporogue/runs/

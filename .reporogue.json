@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "name": "hermesscan",
+  "class": "Go Project",
+  "detectedType": "go",
+  "theme": "dungeon",
+  "commands": {
+    "build": {
+      "label": "Enter the Build Forge",
+      "command": "go",
+      "args": [
+        "build",
+        "./..."
+      ]
+    },
+    "test": {
+      "label": "Fight in the Test Arena",
+      "command": "go",
+      "args": [
+        "test",
+        "./..."
+      ]
+    },
+    "lint": {
+      "label": "Explore the Lint Crypt",
+      "command": "go",
+      "args": [
+        "vet",
+        "./..."
+      ]
+    },
+    "format": {
+      "label": "Polish the Rune Tablets",
+      "command": "gofmt",
+      "args": [
+        "-w",
+        "."
+      ]
+    }
+  },
+  "artifacts": [
+    "./dist",
+    "./bin"
+  ],
+  "fileSystem": {
+    "followSymlinks": true,
+    "preserveLinkPaths": true,
+    "maxLinkDepth": 8
+  },
+  "inference": {
+    "enabled": true,
+    "notes": [
+      "Go format uses gofmt -w and can modify files. Run it intentionally with reporogue run format."
+    ]
+  },
+  "history": {
+    "enabled": true,
+    "directory": "./.reporogue",
+    "keepRuns": 100,
+    "captureStdout": true,
+    "captureStderr": true
+  },
+  "powershell": {
+    "captureFormattedOutput": false,
+    "outputWidth": 160
+  },
+  "release": {
+    "requireCleanGit": true,
+    "requireBuild": true,
+    "requireTests": true,
+    "requireLint": false,
+    "requireArtifacts": true,
+    "requireChangelog": true,
+    "requireVersion": true
+  }
+}
